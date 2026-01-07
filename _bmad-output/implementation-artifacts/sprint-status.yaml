@@ -1,0 +1,92 @@
+# generated: 2026-01-06
+# project: tambola
+# project_key: tambola
+# tracking_system: file-system
+# story_location: /Users/mac/Desktop/femil/tambola/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-01-06
+project: tambola
+project_key: tambola
+tracking_system: file-system
+story_location: /Users/mac/Desktop/femil/tambola/_bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1
+  epic-1: in-progress
+  1-1-project-initialization-with-next-js: done
+  1-2-user-registration-with-email: backlog
+  1-3-user-login-with-credentials: backlog
+  1-4-user-logout: backlog
+  1-5-password-reset-via-email: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2
+  epic-2: backlog
+  2-1-database-schema-for-games-patterns: backlog
+  2-2-create-game-with-title: backlog
+  2-3-configure-prize-patterns: backlog
+  2-4-configure-game-settings: backlog
+  2-5-generate-shareable-link-game-code: backlog
+  2-6-host-dashboard-with-game-list: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3
+  epic-3: backlog
+  3-1-tambola-ticket-generator-logic: backlog
+  3-2-player-joining-api-ticket-assignment: backlog
+  3-3-real-time-lobby-player-count: backlog
+  3-4-host-start-game-control: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4
+  epic-4: backlog
+  4-1-game-loop-number-generator: backlog
+  4-2-real-time-number-display-announcement: backlog
+  4-3-interactive-ticket-marking: backlog
+  4-4-called-comparison-history: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5
+  epic-5: backlog
+  5-1-claim-verification-logic: backlog
+  5-2-initiating-a-claim: backlog
+  5-3-claim-result-announcement: backlog
+  5-4-pattern-completion-leaderboard: backlog
+  5-5-game-completion-full-house-force-stop: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6
+  epic-6: backlog
+  6-1-reconnection-mid-game-recovery: backlog
+  6-2-mid-game-joining-restricted: backlog
+  6-3-basic-game-history: backlog
+  epic-6-retrospective: optional

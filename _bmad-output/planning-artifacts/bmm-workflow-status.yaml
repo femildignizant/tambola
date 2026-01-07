@@ -1,0 +1,135 @@
+# BMM Workflow Status - Tambola
+# Generated: 2026-01-05
+# Track: BMad Method (Greenfield)
+
+generated: "2026-01-05"
+project: "tambola"
+project_type: "web-application"
+selected_track: "method"
+field_type: "greenfield"
+workflow_path: "method-greenfield.yaml"
+
+workflow_status:
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 1: ANALYSIS (Optional Discovery)
+  # ═══════════════════════════════════════════════════════════════════
+  phase_1_analysis:
+    name: "Analysis"
+    optional: true
+    workflows:
+      brainstorm:
+        id: "brainstorm-project"
+        name: "Brainstorm Session"
+        status: "required" # User selected this
+        agent: "analyst"
+        command: "/bmad-bmm-workflows-brainstorming"
+        note: "Creative exploration for Tambola game features and mechanics"
+
+      product_brief:
+        id: "product-brief"
+        name: "Product Brief"
+        status: "required" # User selected this
+        agent: "analyst"
+        command: "/bmad-bmm-workflows-create-product-brief"
+        note: "Strategic product planning for Tambola"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 2: PLANNING
+  # ═══════════════════════════════════════════════════════════════════
+  phase_2_planning:
+    name: "Planning"
+    required: true
+    workflows:
+      prd:
+        id: "prd"
+        name: "Product Requirements Document"
+        status: "required"
+        agent: "pm"
+        command: "/bmad-bmm-workflows-create-prd"
+        output: "Product Requirements Document with FRs and NFRs"
+
+      ux_design:
+        id: "create-ux-design"
+        name: "UX Design"
+        status: "conditional" # if_has_ui - will be determined after PRD
+        condition: "if_has_ui"
+        agent: "ux-designer"
+        command: "/bmad-bmm-workflows-create-ux-design"
+        note: "Determined after PRD completion"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 3: SOLUTIONING
+  # ═══════════════════════════════════════════════════════════════════
+  phase_3_solutioning:
+    name: "Solutioning"
+    required: true
+    workflows:
+      architecture:
+        id: "create-architecture"
+        name: "System Architecture"
+        status: "required"
+        agent: "architect"
+        command: "/bmad-bmm-workflows-create-architecture"
+        output: "System architecture document"
+        note: "Complete system design including real-time multiplayer architecture"
+
+      epics_and_stories:
+        id: "create-epics-and-stories"
+        name: "Epics & Stories"
+        status: "required"
+        agent: "pm"
+        command: "/bmad-bmm-workflows-create-epics-and-stories"
+        note: "Break down PRD into implementable epics with full context"
+
+      test_design:
+        id: "test-design"
+        name: "Test Design"
+        status: "optional"
+        agent: "tea"
+        command: "/bmad-bmm-workflows-testarch-test-design"
+        output: "System-level testability review"
+
+      implementation_readiness:
+        id: "implementation-readiness"
+        name: "Implementation Readiness Check"
+        status: "required"
+        agent: "architect"
+        command: "/bmad-bmm-workflows-check-implementation-readiness"
+        note: "Validates PRD + Architecture + Epics + UX alignment"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 4: IMPLEMENTATION
+  # ═══════════════════════════════════════════════════════════════════
+  phase_4_implementation:
+    name: "Implementation"
+    required: true
+    workflows:
+      sprint_planning:
+        id: "sprint-planning"
+        name: "Sprint Planning"
+        status: "required"
+        agent: "sm"
+        command: "/bmad-bmm-workflows-sprint-planning"
+        note: "Creates sprint plan - subsequent work tracked in sprint-status.yaml"
+
+# ═══════════════════════════════════════════════════════════════════
+# PROJECT CONTEXT
+# ═══════════════════════════════════════════════════════════════════
+project_context:
+  description: "Online multiplayer Tambola game"
+  stack: "Next.js Full Stack"
+  audience: "Everyone (General Public)"
+  key_features:
+    - "Host can create and manage games"
+    - "Players can join games online"
+    - "Real-time multiplayer gameplay"
+    - "Number calling and ticket marking"
+
+# ═══════════════════════════════════════════════════════════════════
+# NEXT STEPS
+# ═══════════════════════════════════════════════════════════════════
+next_workflow:
+  id: "brainstorm-project"
+  name: "Brainstorm Session"
+  agent: "analyst"
+  command: "/bmad-bmm-workflows-brainstorming"
