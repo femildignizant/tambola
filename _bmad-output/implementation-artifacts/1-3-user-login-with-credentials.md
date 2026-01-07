@@ -1,6 +1,6 @@
 # Story 1.3: User Login with Credentials
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -102,8 +102,12 @@ N/A - Implementation completed without issues.
 - ✅ Protected routes handled by BetterAuth session management (AC4)
 - ✅ User confirmed manual testing successful - all acceptance criteria satisfied
 - 📝 **Testing Note**: User prefers manual testing - no automated browser tests created per user request
+- ✅ **Code Review Fix**: Added `src/app/dashboard/page.tsx` as landing page
+- ✅ **Code Review Fix**: Added `src/middleware.ts` for route protection and auth redirection
 
 ### File List
 
 - src/features/auth/components/LoginForm.tsx
 - src/app/(auth)/login/page.tsx
+- src/app/dashboard/page.tsx
+- src/middleware.ts

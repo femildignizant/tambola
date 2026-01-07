@@ -1,6 +1,6 @@
 # Story 1.4: User Logout
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -236,7 +236,9 @@ N/A - Implementation completed without issues.
 - ✅ User confirmed manual testing successful - all acceptance criteria satisfied
   - Session destroyed on logout
   - Redirect to landing page works
+  - Redirect to landing page works
   - Protected routes redirect to login after logout
+- ✅ **Code Review Verified**: Middleware ensures correct session handling and redirection
 
 ### File List
 

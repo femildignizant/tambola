@@ -41,18 +41,18 @@ story_location: /Users/mac/Desktop/femil/tambola/_bmad-output/implementation-art
 
 development_status:
   # Epic 1
-  epic-1: in-progress
+  epic-1: done
   1-1-project-initialization-with-next-js: done
   1-2-user-registration-with-email: done
-  1-3-user-login-with-credentials: review
-  1-4-user-logout: review
+  1-3-user-login-with-credentials: done
+  1-4-user-logout: done
   1-5-password-reset-via-email: done
-  epic-1-retrospective: optional
+  epic-1-retrospective: done
 
   # Epic 2
-  epic-2: backlog
-  2-1-database-schema-for-games-patterns: backlog
-  2-2-create-game-with-title: backlog
+  epic-2: in-progress
+  2-1-database-schema-for-games-patterns: ready-for-dev
+  2-2-create-game-with-title: ready-for-dev
   2-3-configure-prize-patterns: backlog
   2-4-configure-game-settings: backlog
   2-5-generate-shareable-link-game-code: backlog
