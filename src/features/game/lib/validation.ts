@@ -53,4 +53,52 @@ export const gamePatternSchema = z.object({
   ),
 });
 
-export type GamePatternsInput = z.infer<typeof gamePatternSchema>;
+import {
+  GAME_INTERVALS,
+  MAX_PLAYERS,
+  MIN_PLAYERS,
+} from "./constants";
+
+export const gameSettingsSchema = z
+  .object({
+    numberInterval: z
+      .union([
+        z.literal(GAME_INTERVALS[0]),
+        z.literal(GAME_INTERVALS[1]),
+        z.literal(GAME_INTERVALS[2]),
+      ])
+      .refine((val) => GAME_INTERVALS.includes(val), {
+        message: `Interval must be ${GAME_INTERVALS.join(
+          ", "
+        )} seconds`,
+      }),
+    minPlayers: z
+      .number()
+      .int()
+      .min(
+        MIN_PLAYERS,
+        `Minimum players must be at least ${MIN_PLAYERS}`
+      )
+      .max(
+        MAX_PLAYERS,
+        `Minimum players cannot exceed ${MAX_PLAYERS}`
+      ),
+    maxPlayers: z
+      .number()
+      .int()
+      .min(
+        MIN_PLAYERS,
+        `Maximum players must be at least ${MIN_PLAYERS}`
+      )
+      .max(
+        MAX_PLAYERS,
+        `Maximum players cannot exceed ${MAX_PLAYERS}`
+      ),
+  })
+  .refine((data) => data.minPlayers <= data.maxPlayers, {
+    message:
+      "Minimum players must be less than or equal to maximum players",
+    path: ["minPlayers"], // Attach error to minPlayers
+  });
+
+export type GameSettingsInput = z.infer<typeof gameSettingsSchema>;

@@ -1,7 +1,9 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { PatternConfigForm } from "@/features/game/components/PatternConfigForm";
+import { GameSettingsForm } from "@/features/game/components/GameSettingsForm";
 import { headers } from "next/headers";
+
 import { redirect, notFound } from "next/navigation";
 
 interface PageProps {
@@ -45,6 +47,12 @@ export default async function GameConfigPage(props: PageProps) {
     );
   }
 
+  const settingsValues = {
+    numberInterval: game.numberInterval as 7 | 10 | 15,
+    minPlayers: game.minPlayers,
+    maxPlayers: game.maxPlayers,
+  };
+
   return (
     <div className="container max-w-3xl py-8 space-y-8">
       <div className="space-y-2">
@@ -52,7 +60,7 @@ export default async function GameConfigPage(props: PageProps) {
           Game Configuration
         </h1>
         <p className="text-muted-foreground">
-          Configure winning patterns and prizes for{" "}
+          Configure settings and winning patterns for{" "}
           <span className="font-semibold text-foreground">
             {game.title}
           </span>
@@ -60,6 +68,10 @@ export default async function GameConfigPage(props: PageProps) {
       </div>
 
       <div className="grid gap-6">
+        <GameSettingsForm
+          gameId={gameId}
+          initialValues={settingsValues}
+        />
         <PatternConfigForm
           gameId={gameId}
           initialPatterns={game.patterns}

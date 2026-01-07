@@ -54,7 +54,7 @@ development_status:
   2-1-database-schema-for-games-patterns: done
   2-2-create-game-with-title: done
   2-3-configure-prize-patterns: done
-  2-4-configure-game-settings: backlog
+  2-4-configure-game-settings: done
   2-5-generate-shareable-link-game-code: backlog
   2-6-host-dashboard-with-game-list: backlog
   epic-2-retrospective: optional

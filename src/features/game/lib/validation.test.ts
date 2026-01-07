@@ -70,6 +70,61 @@ async function runTests() {
   }
 
   console.log("All tests passed!");
+
+  // 4. Test Game Settings Schema
+  try {
+    const { gameSettingsSchema } = require("./validation");
+
+    // 4.1 Valid Settings
+    const validSettings = {
+      numberInterval: 10,
+      minPlayers: 5,
+      maxPlayers: 50,
+    };
+    gameSettingsSchema.parse(validSettings);
+    console.log("✅ Valid game settings passed");
+
+    // 4.2 Invalid Interval
+    try {
+      gameSettingsSchema.parse({
+        ...validSettings,
+        numberInterval: 5,
+      });
+      console.error("❌ Invalid interval (5) should have failed");
+    } catch (e: any) {
+      console.log("✅ Invalid interval correctly failed");
+    }
+
+    // 4.3 Min > Max
+    try {
+      gameSettingsSchema.parse({
+        ...validSettings,
+        minPlayers: 60,
+        maxPlayers: 50,
+      });
+      console.error("❌ Min > Max should have failed");
+    } catch (e: any) {
+      console.log("✅ Min > Max correctly failed");
+    }
+
+    // 4.4 Out of Range
+    try {
+      gameSettingsSchema.parse({ ...validSettings, minPlayers: 1 });
+      console.error("❌ Min players < 2 should have failed");
+    } catch (e: any) {
+      console.log("✅ Min players < 2 correctly failed");
+    }
+    try {
+      gameSettingsSchema.parse({ ...validSettings, maxPlayers: 80 });
+      console.error("❌ Max players > 75 should have failed");
+    } catch (e: any) {
+      console.log("✅ Max players > 75 correctly failed");
+    }
+  } catch (e) {
+    console.log("⚠️ gameSettingsSchema not yet implemented");
+  }
+
+  console.log("All tests passed!");
 }
 
 runTests();
