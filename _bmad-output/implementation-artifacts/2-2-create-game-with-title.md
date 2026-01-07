@@ -1,6 +1,6 @@
 # Story 2.2: Create Game with Title
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -28,36 +28,36 @@ So that **my players can identify the game**.
 
 ## Tasks / Subtasks
 
-- [ ] Create Game Creation Zod Schema (AC: 1, 2)
+- [x] Create Game Creation Zod Schema (AC: 1, 2)
 
-  - [ ] Define `createGameSchema` in `src/features/game/lib/validation.ts` (new file?)
-  - [ ] Validate title length (1-100 characters)
+  - [x] Define `createGameSchema` in `src/features/game/lib/validation.ts` (new file?)
+  - [x] Validate title length (1-100 characters)
 
-- [ ] Implement Game Code Generator (AC: 3)
+- [x] Implement Game Code Generator (AC: 3)
 
-  - [ ] Create `generateGameCode` utility in `src/features/game/lib/utils.ts`
-  - [ ] Use `nanoid` or `crypto` to generate 6-char uppercase alphanumeric string (A-Z, 0-9)
-  - [ ] Ensure exclusion of ambiguous characters if desired (optional: I, 1, O, 0)
+  - [x] Create `generateGameCode` utility in `src/features/game/lib/utils.ts`
+  - [x] Use `nanoid` or `crypto` to generate 6-char uppercase alphanumeric string (A-Z, 0-9)
+  - [x] Ensure exclusion of ambiguous characters if desired (optional: I, 1, O, 0)
 
-- [ ] Create Game Creation API (AC: 1, 3)
+- [x] Create Game Creation API (AC: 1, 3)
 
-  - [ ] Create `POST /api/games` route in `src/app/api/games/route.ts`
-  - [ ] Authenticate user (get `hostId`)
-  - [ ] Validate request body using Zod schema
-  - [ ] Generate unique `gameCode` (handle potential collision with retry loop or catch unique constraint error)
-  - [ ] Create `Game` record in DB with default status `CONFIGURING`
-  - [ ] Return `{ data: { gameId } }` response
+  - [x] Create `POST /api/games` route in `src/app/api/games/route.ts`
+  - [x] Authenticate user (get `hostId`)
+  - [x] Validate request body using Zod schema
+  - [x] Generate unique `gameCode` (handle potential collision with retry loop or catch unique constraint error)
+  - [x] Create `Game` record in DB with default status `CONFIGURING`
+  - [x] Return `{ data: { gameId } }` response
 
-- [ ] Create UI Page: Create Game (AC: 1, 2)
+- [x] Create UI Page: Create Game (AC: 1, 2)
 
-  - [ ] Create `src/app/dashboard/create/page.tsx`
-  - [ ] Implement `CreateGameForm` component with shadcn/ui (Input, Button)
-  - [ ] Handle form submission to `POST /api/games`
-  - [ ] Handle loading state and errors
-  - [ ] Redirect to `/dashboard/game/[gameId]/config` on success
+  - [x] Create `src/app/dashboard/create/page.tsx`
+  - [x] Implement `CreateGameForm` component with shadcn/ui (Input, Button)
+  - [x] Handle form submission to `POST /api/games`
+  - [x] Handle loading state and errors
+  - [x] Redirect to `/dashboard/game/[gameId]/config` on success
 
-- [ ] Integrate with Dashboard (AC: 1)
-  - [ ] Ensure `/dashboard` has a link/button to `/dashboard/create` (Basic integration)
+- [x] Integrate with Dashboard (AC: 1)
+  - [x] Ensure `/dashboard` has a link/button to `/dashboard/create` (Basic integration)
 
 ## Dev Notes
 
@@ -103,10 +103,27 @@ So that **my players can identify the game**.
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Antigravity (Gemini 2.0 Flash)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Implemented Zod schema for game creation validation.
+- Implemented `nanoid` based game code generator.
+- Created `/api/games` endpoint with `better-auth` integration.
+- Created UI for creating games using shadcn components.
+- Integrated "Create New Game" button in Dashboard.
+- [Code Review] Added dependency files (package.json, lockfiles) to File List.
+
 ### File List
+
+- src/features/game/lib/validation.ts
+- src/features/game/lib/utils.ts
+- src/features/game/components/CreateGameForm.tsx
+- src/app/api/games/route.ts
+- src/app/dashboard/create/page.tsx
+- src/app/dashboard/page.tsx
+- package.json
+- package-lock.json
+- pnpm-lock.yaml
