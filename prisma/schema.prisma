@@ -13,10 +13,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model InitCheck {
-  id Int @id
-}
-
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -27,6 +23,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  games         Game[]
 
   @@map("user")
 }
@@ -43,9 +40,9 @@ model Session {
 
   token String
 
-  @@map("session")
   @@unique([token])
   @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -66,8 +63,8 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
 
-  @@map("account")
   @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -78,6 +75,59 @@ model Verification {
   createdAt  DateTime?
   updatedAt  DateTime?
 
-  @@map("verification")
   @@index([identifier])
+  @@map("verification")
+}
+
+enum GameStatus {
+  CONFIGURING
+  LOBBY
+  STARTED
+  COMPLETED
+}
+
+enum Pattern {
+  FIRST_ROW
+  SECOND_ROW
+  THIRD_ROW
+  EARLY_FIVE
+  FOUR_CORNERS
+  FULL_HOUSE
+}
+
+model Game {
+  id             String        @id @default(cuid())
+  title          String        @db.VarChar(100)
+  hostId         String
+  host           User          @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  status         GameStatus    @default(CONFIGURING)
+  gameCode       String        @unique @db.VarChar(6)
+  numberInterval Int           @default(10) // seconds: 7, 10, or 15
+  minPlayers     Int           @default(2)
+  maxPlayers     Int           @default(75)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  patterns       GamePattern[]
+
+  @@index([hostId])
+  @@index([status])
+  @@index([gameCode])
+  @@map("game")
+}
+
+model GamePattern {
+  id        String   @id @default(cuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  pattern   Pattern
+  enabled   Boolean  @default(true)
+  points1st Int      @default(100)
+  points2nd Int? // Null if no tiered scoring
+  points3rd Int? // Null if no tiered scoring
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([gameId, pattern])
+  @@index([gameId])
+  @@map("gamePattern")
 }
