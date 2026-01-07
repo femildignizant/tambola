@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { PatternConfigForm } from "@/features/game/components/PatternConfigForm";
 import { GameSettingsForm } from "@/features/game/components/GameSettingsForm";
+import { InviteGame } from "@/features/game/components/InviteGame";
 import { headers } from "next/headers";
 
 import { redirect, notFound } from "next/navigation";
@@ -68,6 +69,7 @@ export default async function GameConfigPage(props: PageProps) {
       </div>
 
       <div className="grid gap-6">
+        <InviteGame gameId={gameId} gameCode={game.gameCode} />
         <GameSettingsForm
           gameId={gameId}
           initialValues={settingsValues}

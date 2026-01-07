@@ -4,6 +4,51 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { gameSettingsSchema } from "@/features/game/lib/validation";
 
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ gameId: string }> }
+) {
+  try {
+    const { gameId } = await params;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const game = await prisma.game.findUnique({
+      where: { id: gameId },
+    });
+
+    if (!game) {
+      return NextResponse.json(
+        { error: "Game not found" },
+        { status: 404 }
+      );
+    }
+
+    if (game.hostId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Forbidden" },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json({ data: game });
+  } catch (error) {
+    console.error("Get game error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ gameId: string }> }
