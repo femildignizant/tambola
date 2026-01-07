@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signIn } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -127,6 +128,15 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
+
+            <div className="text-right text-sm">
+              <Link
+                href="/forgot-password"
+                className="text-primary hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
 
             <Button
               type="submit"

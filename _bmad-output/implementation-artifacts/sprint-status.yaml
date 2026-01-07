@@ -46,7 +46,7 @@ development_status:
   1-2-user-registration-with-email: done
   1-3-user-login-with-credentials: review
   1-4-user-logout: review
-  1-5-password-reset-via-email: backlog
+  1-5-password-reset-via-email: done
   epic-1-retrospective: optional
 
   # Epic 2
