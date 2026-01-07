@@ -44,8 +44,8 @@ development_status:
   epic-1: in-progress
   1-1-project-initialization-with-next-js: done
   1-2-user-registration-with-email: done
-  1-3-user-login-with-credentials: backlog
-  1-4-user-logout: backlog
+  1-3-user-login-with-credentials: review
+  1-4-user-logout: review
   1-5-password-reset-via-email: backlog
   epic-1-retrospective: optional
 
