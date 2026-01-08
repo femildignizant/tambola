@@ -58,9 +58,7 @@ describe("PlayerJoinForm", () => {
     };
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+
 
   it("should render join form with name input", () => {
     render(
@@ -70,7 +68,9 @@ describe("PlayerJoinForm", () => {
       />
     );
 
-    expect(screen.getByText("Join Game")).toBeDefined();
+    expect(
+      screen.getByRole("heading", { name: "Join Game" })
+    ).toBeDefined();
     expect(screen.getByLabelText("Your Name")).toBeDefined();
     expect(
       screen.getByRole("button", { name: /join game/i })

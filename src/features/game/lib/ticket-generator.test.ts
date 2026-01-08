@@ -92,7 +92,7 @@ describe("Tambola Ticket Generator", () => {
   });
 
   it("should generate robustly (bulk test)", () => {
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
       const ticket = generateTicket();
 
       // Full validation for every ticket

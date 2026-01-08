@@ -1,0 +1,371 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/home/digni/Documents/Projects/tambola[39m
+
+ [32m✓[39m src/features/game/lib/number-generator.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 231[2mms[22m[39m
+ [32m✓[39m src/app/api/games/[gameId]/call-number/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 148[2mms[22m[39m
+[90mstdout[2m | src/features/game/lib/validation.test.ts
+[22m[39mRunning validation tests...
+✅ Valid data passed
+✅ Missing FULL_HOUSE correctly failed
+✅ Negative points correctly failed
+All tests passed!
+⚠️ gameSettingsSchema not yet implemented
+All tests passed!
+
+ [32m✓[39m src/app/api/games/[gameId]/start/route.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 180[2mms[22m[39m
+ [31m❯[39m src/features/game/components/LobbyPlayerList.test.tsx [2m([22m[2m7 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[33m 458[2mms[22m[39m
+[31m     [31m×[31m should render player list with initial players[39m[32m 268[2mms[22m[39m
+[31m     [31m×[31m should subscribe to Pusher channel on mount[39m[32m 38[2mms[22m[39m
+[31m     [31m×[31m should unsubscribe from Pusher channel on unmount[39m[32m 48[2mms[22m[39m
+     [32m✓[39m should show empty state when no players[32m 21[2mms[22m[39m
+[31m     [31m×[31m should highlight current player[39m[32m 31[2mms[22m[39m
+     [32m✓[39m should call setPlayers with initial players on mount[32m 19[2mms[22m[39m
+[31m     [31m×[31m should format join time correctly[39m[32m 23[2mms[22m[39m
+[90mstderr[2m | src/features/game/components/GameList.test.tsx[2m > [22m[2mGameList Component[2m > [22m[2mshould render loading state initially
+[22m[39mFailed to load games TypeError: Cannot read properties of undefined (reading 'ok')
+    at fetchGames [90m(/home/digni/Documents/Projects/tambola/[39msrc/features/game/components/GameList.tsx:36:22[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+
+[90mstderr[2m | src/features/game/components/GameList.test.tsx[2m > [22m[2mGameList Component[2m > [22m[2mshould render error state on fetch failure
+[22m[39mFailed to load games Error: Network error
+    at [90m/home/digni/Documents/Projects/tambola/[39msrc/features/game/components/GameList.test.tsx:42:7
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+ [32m✓[39m src/app/api/games/[gameId]/join/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 130[2mms[22m[39m
+ [32m✓[39m src/features/game/components/TicketDisplay.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 577[2mms[22m[39m
+ [32m✓[39m src/features/game/components/GameList.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1347[2mms[22m[39m
+     [33m[2m✓[22m[39m should render games list when games are returned [33m 937[2mms[22m[39m
+[90mstderr[2m | src/features/game/components/PlayerJoinForm.test.tsx[2m > [22m[2mPlayerJoinForm[2m > [22m[2mshould handle network error
+[22m[39mJoin error: Error: Network error
+    at [90m/home/digni/Documents/Projects/tambola/[39msrc/features/game/components/PlayerJoinForm.test.tsx:213:7
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+ [31m❯[39m src/features/game/components/PlayerJoinForm.test.tsx [2m([22m[2m7 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 2103[2mms[22m[39m
+[31m     [31m×[31m should render join form with name input[39m[33m 386[2mms[22m[39m
+     [33m[2m✓[22m[39m should show error for empty name [33m 877[2mms[22m[39m
+     [32m✓[39m should show error for name longer than 20 characters[32m 170[2mms[22m[39m
+     [32m✓[39m should call API and handle successful join[32m 188[2mms[22m[39m
+     [32m✓[39m should handle API error[32m 175[2mms[22m[39m
+     [32m✓[39m should handle network error[32m 126[2mms[22m[39m
+     [32m✓[39m should disable form during submission[32m 165[2mms[22m[39m
+ [32m✓[39m src/app/api/games/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [31m❯[39m src/features/game/lib/ticket-generator.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 6225[2mms[22m[39m
+     [32m✓[39m should generate a valid 3x9 ticket structure[32m 71[2mms[22m[39m
+     [32m✓[39m should have exactly 15 numbers in total[32m 3[2mms[22m[39m
+     [32m✓[39m should have exactly 5 numbers per row[32m 4[2mms[22m[39m
+     [32m✓[39m should have numbers within valid column ranges[32m 9[2mms[22m[39m
+     [32m✓[39m should have numbers sorted in ascending order within each column[32m 9[2mms[22m[39m
+     [32m✓[39m should have no duplicate numbers across the ticket[32m 2[2mms[22m[39m
+     [32m✓[39m should have at least 1 number in every column[32m 4[2mms[22m[39m
+[31m     [31m×[31m should generate robustly (bulk test)[39m[33m 6103[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/HostStartButton.test.tsx[2m [ src/features/game/components/HostStartButton.test.tsx ][22m
+[31m[1mError[22m: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no top level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-mock[39m
+[36m [2m❯[22m src/features/game/components/HostStartButton.tsx:[2m15:1[22m[39m
+    [90m 13| [39m[35mimport[39m { [33mAlert[39m[33m,[39m [33mAlertDescription[39m } [35mfrom[39m [32m"@/components/ui/alert"[39m[33m;[39m
+    [90m 14| [39m[35mimport[39m { toast } [35mfrom[39m [32m"sonner"[39m[33m;[39m
+    [90m 15| [39m[35mimport[39m { pusherClient } [35mfrom[39m [32m"@/lib/pusher-client"[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 16| [39m
+    [90m 17| [39m[35minterface[39m [33mHostStartButtonProps[39m {
+
+[31m[1mCaused by: ReferenceError[22m: Cannot access 'mockSubscribe' before initialization[39m
+[36m [2m❯[22m src/features/game/components/HostStartButton.test.tsx:[2m45:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/lib/validation.test.ts[2m [ src/features/game/lib/validation.test.ts ][22m
+[31m[1mError[22m: No test suite found in file /home/digni/Documents/Projects/tambola/src/features/game/lib/validation.test.ts[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/LobbyPlayerList.test.tsx[2m > [22mLobbyPlayerList[2m > [22mshould render player list with initial players
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: 2 / 10. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-center justify-between"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [36m<svg[31m
+              [33mdata-testid[31m=[32m"users-icon"[31m
+            [36m/>[31m
+            [0mPlayers[0m
+          [36m</h2>[31m
+          [36m<span>[31m
+            [0m0[0m
+            [0m / [0m
+            [0m10[0m
+          [36m</span>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+      [36m<div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"text-sm text-muted-foreground text-center py-4"[31m
+        [36m>[31m
+          [0mWaiting for players to join...[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/features/game/components/LobbyPlayerList.test.tsx:[2m94:19[22m[39m
+    [90m 92| [39m
+    [90m 93| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m"Players"[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m 94| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m"2 / 10"[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 95| [39m  })[33m;[39m
+    [90m 96| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/LobbyPlayerList.test.tsx[2m > [22mLobbyPlayerList[2m > [22mshould subscribe to Pusher channel on mount
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ 'game-test-game-123' ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m src/features/game/components/LobbyPlayerList.test.tsx:[2m106:40[22m[39m
+    [90m104| [39m    )[33m;[39m
+    [90m105| [39m
+    [90m106| [39m    [34mexpect[39m(mockPusherClient[33m.[39msubscribe)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   | [39m                                       [31m^[39m
+    [90m107| [39m      [32m`game-[39m[36m${[39mmockGameId[36m}[39m[32m`[39m
+    [90m108| [39m    )[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/LobbyPlayerList.test.tsx[2m > [22mLobbyPlayerList[2m > [22mshould unsubscribe from Pusher channel on unmount
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ 'player:joined' ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m src/features/game/components/LobbyPlayerList.test.tsx:[2m126:32[22m[39m
+    [90m124| [39m    [34munmount[39m()[33m;[39m
+    [90m125| [39m
+    [90m126| [39m    [34mexpect[39m(mockChannel[33m.[39munbind)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m"player:joined"[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m127| [39m    [34mexpect[39m(mockPusherClient[33m.[39munsubscribe)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m128| [39m      [32m`game-[39m[36m${[39mmockGameId[36m}[39m[32m`[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/LobbyPlayerList.test.tsx[2m > [22mLobbyPlayerList[2m > [22mshould highlight current player
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: You. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-center justify-between"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [36m<svg[31m
+              [33mdata-testid[31m=[32m"users-icon"[31m
+            [36m/>[31m
+            [0mPlayers[0m
+          [36m</h2>[31m
+          [36m<span>[31m
+            [0m0[0m
+            [0m / [0m
+            [0m10[0m
+          [36m</span>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+      [36m<div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"text-sm text-muted-foreground text-center py-4"[31m
+        [36m>[31m
+          [0mWaiting for players to join...[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/features/game/components/LobbyPlayerList.test.tsx:[2m163:19[22m[39m
+    [90m161| [39m    )[33m;[39m
+    [90m162| [39m
+    [90m163| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m"You"[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m164| [39m
+    [90m165| [39m    // Check that the current player's container has the highlight cla…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/LobbyPlayerList.test.tsx[2m > [22mLobbyPlayerList[2m > [22mshould format join time correctly
+[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: /\d{1,2}:\d{2}/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-center justify-between"[31m
+        [36m>[31m
+          [36m<h2>[31m
+            [36m<svg[31m
+              [33mdata-testid[31m=[32m"users-icon"[31m
+            [36m/>[31m
+            [0mPlayers[0m
+          [36m</h2>[31m
+          [36m<span>[31m
+            [0m0[0m
+            [0m / [0m
+            [0m10[0m
+          [36m</span>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+      [36m<div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"text-sm text-muted-foreground text-center py-4"[31m
+        [36m>[31m
+          [0mWaiting for players to join...[0m
+        [36m</p>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m109:15[22m[39m
+[36m [2m❯[22m src/features/game/components/LobbyPlayerList.test.tsx:[2m203:33[22m[39m
+    [90m201| [39m    [90m// The time should be formatted as HH:MM[39m
+    [90m202| [39m    // We can't test exact time due to timezone differences, but we ca…
+    [90m203| [39m    [35mconst[39m timeElements [33m=[39m screen[33m.[39m[34mgetAllByText[39m([36m/\d{1,2}:\d{2}/[39m)[33m;[39m
+    [90m   | [39m                                [31m^[39m
+    [90m204| [39m    [34mexpect[39m(timeElements[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m205| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/PlayerJoinForm.test.tsx[2m > [22mPlayerJoinForm[2m > [22mshould render join form with name input
+[31m[1mTestingLibraryElementError[22m: Found multiple elements with the text: Join Game
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h2>[31m
+  [0mJoin Game[0m
+[36m</h2>[31m
+
+Ignored nodes: comments, script, style
+[36m<button[31m
+  [33mclass[31m=[32m"w-full"[31m
+  [33mtype[31m=[32m"submit"[31m
+[36m>[31m
+  [0mJoin Game[0m
+[36m</button>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<div>[31m
+        [36m<h2>[31m
+          [0mJoin Game[0m
+        [36m</h2>[31m
+        [36m<p>[31m
+          [0mEnter your name to join the game[0m
+        [36m</p>[31m
+      [36m</div>[31m
+      [36m<div>[31m
+        [36m<form[31m
+          [33mclass[31m=[32m"space-y-4"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"space-y-2"[31m
+          [36m>[31m
+            [36m<label[31m
+              [33mfor[31m=[32m"name"[31m
+            [36m>[31m
+              [0mYour Name[0m
+            [36m</label>[31m
+            [36m<input[31m
+              [33mid[31m=[32m"name"[31m
+              [33mmaxlength[31m=[32m"20"[31m
+              [33mplaceholder[31m=[32m"Enter your name"[31m
+              [33mtype[31m=[32m"text"[31m
+              [33mvalue[31m=[32m""[31m
+            [36m/>[31m
+          [36m</div>[31m
+          [36m<button[31m
+            [33mclass[31m=[32m"w-full"[31m
+            [33mtype[31m=[32m"submit"[31m
+          [36m>[31m
+            [0mJoin Game[0m
+          [36m</button>[31m
+        [36m</form>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/features/game/components/PlayerJoinForm.test.tsx:[2m73:19[22m[39m
+    [90m 71| [39m    )[33m;[39m
+    [90m 72| [39m
+    [90m 73| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m"Join Game"[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 74| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByLabelText[39m([32m"Your Name"[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m 75| [39m    [34mexpect[39m(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/game/lib/ticket-generator.test.ts[2m > [22mTambola Ticket Generator[2m > [22mshould generate robustly (bulk test)
+[31m[1mError[22m: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+[36m [2m❯[22m src/features/game/lib/ticket-generator.test.ts:[2m94:3[22m[39m
+    [90m 92| [39m  })[33m;[39m
+    [90m 93| [39m
+    [90m 94| [39m  [34mit[39m([32m"should generate robustly (bulk test)"[39m[33m,[39m () [33m=>[39m {
+    [90m   | [39m  [31m^[39m
+    [90m 95| [39m    [35mfor[39m ([35mlet[39m i [33m=[39m [34m0[39m[33m;[39m i [33m<[39m [34m1000[39m[33m;[39m i[33m++[39m) {
+    [90m 96| [39m      [35mconst[39m ticket [33m=[39m [34mgenerateTicket[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m69 passed[39m[22m[90m (76)[39m
+[2m   Start at [22m 16:48:07
+[2m   Duration [22m 13.43s[2m (transform 7.44s, setup 18.70s, import 10.93s, tests 11.44s, environment 59.31s)[22m
+

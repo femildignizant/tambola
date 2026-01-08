@@ -43,6 +43,12 @@ interface GameStore {
   isLoading: boolean;
   error: string | null;
 
+  // Game Loop State (Story 4.1)
+  calledNumbers: number[];
+  currentNumber: number | null;
+  gameSequence: number;
+  isGameEnded: boolean;
+
   // Actions
   setGame: (game: GameDetails) => void;
   setPlayers: (players: Player[]) => void;
@@ -52,6 +58,12 @@ interface GameStore {
   setError: (error: string | null) => void;
   updateGameStatus: (status: GameDetails["status"]) => void;
   reset: () => void;
+
+  // Game Loop Actions (Story 4.1)
+  setCalledNumbers: (numbers: number[]) => void;
+  addCalledNumber: (number: number, sequence: number) => void;
+  setGameEnded: () => void;
+  resetGameLoopState: () => void;
 }
 
 const initialState = {
@@ -60,6 +72,11 @@ const initialState = {
   currentPlayer: null,
   isLoading: false,
   error: null,
+  // Game Loop initial state
+  calledNumbers: [],
+  currentNumber: null,
+  gameSequence: 0,
+  isGameEnded: false,
 };
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -93,4 +110,34 @@ export const useGameStore = create<GameStore>((set) => ({
     })),
 
   reset: () => set(initialState),
+
+  // Game Loop Actions (Story 4.1)
+  setCalledNumbers: (numbers) =>
+    set({
+      calledNumbers: numbers,
+      currentNumber: numbers.length > 0 ? numbers[numbers.length - 1] : null,
+      gameSequence: numbers.length,
+    }),
+
+  addCalledNumber: (number, sequence) =>
+    set((state) => ({
+      calledNumbers: [...state.calledNumbers, number],
+      currentNumber: number,
+      gameSequence: sequence,
+    })),
+
+  setGameEnded: () =>
+    set((state) => ({
+      isGameEnded: true,
+      game: state.game ? { ...state.game, status: "COMPLETED" } : null,
+    })),
+
+  resetGameLoopState: () =>
+    set({
+      calledNumbers: [],
+      currentNumber: null,
+      gameSequence: 0,
+      isGameEnded: false,
+    }),
 }));
+

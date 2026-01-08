@@ -197,10 +197,13 @@ describe("POST /api/games/[gameId]/start", () => {
     expect(data.data.status).toBe("STARTED");
     expect(data.data.startedAt).toBeDefined();
 
-    // Verify game was updated
+    // Verify game was updated with status and startedAt
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: mockGameId },
-      data: { status: "STARTED" },
+      data: {
+        status: "STARTED",
+        startedAt: expect.any(Date),
+      },
     });
 
     // Verify Pusher event was triggered

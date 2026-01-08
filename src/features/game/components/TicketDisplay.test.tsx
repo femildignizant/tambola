@@ -71,7 +71,6 @@ describe("TicketDisplay", () => {
     ]; // Only 2 rows instead of 3
 
     render(<TicketDisplay grid={invalidGrid as any} />);
-
     expect(screen.getByText("Invalid ticket data")).toBeDefined();
   });
 

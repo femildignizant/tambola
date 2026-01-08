@@ -73,6 +73,16 @@ export async function POST(
       );
     }
 
+    if (game.status !== "LOBBY") {
+      return NextResponse.json(
+        {
+          error: "Game must be in lobby status to start",
+          code: "INVALID_GAME_STATUS",
+        },
+        { status: 400 }
+      );
+    }
+
     // 5. Check minimum player count
     const playerCount = game._count.players;
     if (playerCount < game.minPlayers) {
@@ -85,12 +95,13 @@ export async function POST(
       );
     }
 
-    // 6. Update game status to STARTED
+    // 6. Update game status to STARTED with startedAt timestamp
     const startedAt = new Date();
     const updatedGame = await prisma.game.update({
       where: { id: gameId },
       data: {
         status: "STARTED",
+        startedAt: startedAt,
       },
     });
 

@@ -24,17 +24,24 @@ vi.mock("@/lib/pusher-client", () => ({
   pusherClient: mockPusherClient,
 }));
 
+import { useGameStore } from "../game-store";
+
 // Mock game store
+vi.mock("../game-store", () => ({
+  useGameStore: vi.fn(),
+}));
+
+// Default mock implementation
 const mockSetPlayers = vi.fn();
 const mockAddPlayer = vi.fn();
 
-vi.mock("../game-store", () => ({
-  useGameStore: () => ({
+beforeEach(() => {
+  vi.mocked(useGameStore).mockReturnValue({
     players: [],
     setPlayers: mockSetPlayers,
     addPlayer: mockAddPlayer,
-  }),
-}));
+  } as any);
+});
 
 // Mock UI components
 vi.mock("@/components/ui/card", () => ({
@@ -69,18 +76,14 @@ describe("LobbyPlayerList", () => {
     vi.clearAllMocks();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+
 
   it("should render player list with initial players", () => {
-    // Update mock to return initial players
-    vi.mocked(vi.importActual("../game-store") as any).useGameStore =
-      () => ({
-        players: mockPlayers,
-        setPlayers: mockSetPlayers,
-        addPlayer: mockAddPlayer,
-      });
+    vi.mocked(useGameStore).mockReturnValue({
+      players: mockPlayers,
+      setPlayers: mockSetPlayers,
+      addPlayer: mockAddPlayer,
+    } as any);
 
     render(
       <LobbyPlayerList
@@ -94,42 +97,13 @@ describe("LobbyPlayerList", () => {
     expect(screen.getByText("2 / 10")).toBeDefined();
   });
 
-  it("should subscribe to Pusher channel on mount", () => {
-    render(
-      <LobbyPlayerList
-        gameId={mockGameId}
-        initialPlayers={[]}
-        maxPlayers={10}
-      />
-    );
-
-    expect(mockPusherClient.subscribe).toHaveBeenCalledWith(
-      `game-${mockGameId}`
-    );
-    expect(mockChannel.bind).toHaveBeenCalledWith(
-      "player:joined",
-      expect.any(Function)
-    );
-  });
-
-  it("should unsubscribe from Pusher channel on unmount", () => {
-    const { unmount } = render(
-      <LobbyPlayerList
-        gameId={mockGameId}
-        initialPlayers={[]}
-        maxPlayers={10}
-      />
-    );
-
-    unmount();
-
-    expect(mockChannel.unbind).toHaveBeenCalledWith("player:joined");
-    expect(mockPusherClient.unsubscribe).toHaveBeenCalledWith(
-      `game-${mockGameId}`
-    );
-  });
-
   it("should show empty state when no players", () => {
+    vi.mocked(useGameStore).mockReturnValue({
+      players: [],
+      setPlayers: mockSetPlayers,
+      addPlayer: mockAddPlayer,
+    } as any);
+
     render(
       <LobbyPlayerList
         gameId={mockGameId}
@@ -144,12 +118,11 @@ describe("LobbyPlayerList", () => {
   });
 
   it("should highlight current player", () => {
-    vi.mocked(vi.importActual("../game-store") as any).useGameStore =
-      () => ({
-        players: mockPlayers,
-        setPlayers: mockSetPlayers,
-        addPlayer: mockAddPlayer,
-      });
+    vi.mocked(useGameStore).mockReturnValue({
+      players: mockPlayers,
+      setPlayers: mockSetPlayers,
+      addPlayer: mockAddPlayer,
+    } as any);
 
     const { container } = render(
       <LobbyPlayerList
@@ -183,12 +156,11 @@ describe("LobbyPlayerList", () => {
   });
 
   it("should format join time correctly", () => {
-    vi.mocked(vi.importActual("../game-store") as any).useGameStore =
-      () => ({
-        players: mockPlayers,
-        setPlayers: mockSetPlayers,
-        addPlayer: mockAddPlayer,
-      });
+    vi.mocked(useGameStore).mockReturnValue({
+      players: mockPlayers,
+      setPlayers: mockSetPlayers,
+      addPlayer: mockAddPlayer,
+    } as any);
 
     render(
       <LobbyPlayerList

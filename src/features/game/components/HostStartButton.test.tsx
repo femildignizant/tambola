@@ -11,7 +11,6 @@ import {
   screen,
   fireEvent,
   waitFor,
-  cleanup,
   act,
 } from "@testing-library/react";
 import { HostStartButton } from "./HostStartButton";
@@ -32,13 +31,18 @@ vi.mock("sonner", () => ({
 }));
 
 // Mock pusher client
-const mockBind = vi.fn();
-const mockUnbindAll = vi.fn();
-const mockUnsubscribe = vi.fn();
-const mockSubscribe = vi.fn(() => ({
-  bind: mockBind,
-  unbind_all: mockUnbindAll,
-}));
+const { mockSubscribe, mockUnsubscribe, mockBind, mockUnbindAll } = vi.hoisted(
+  () => {
+    const mockBind = vi.fn();
+    const mockUnbindAll = vi.fn();
+    const mockUnsubscribe = vi.fn();
+    const mockSubscribe = vi.fn(() => ({
+      bind: mockBind,
+      unbind_all: mockUnbindAll,
+    }));
+    return { mockSubscribe, mockUnsubscribe, mockBind, mockUnbindAll };
+  }
+);
 
 vi.mock("@/lib/pusher-client", () => ({
   pusherClient: {
@@ -53,9 +57,7 @@ describe("HostStartButton", () => {
     global.fetch = vi.fn();
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+
 
   const defaultProps = {
     gameId: "game-123",

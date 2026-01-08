@@ -107,9 +107,16 @@ model Game {
   maxPlayers     Int           @default(75)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  patterns       GamePattern[]
-  players        Player[]
-  tickets        Ticket[]
+
+  // Story 4.1: Game Loop fields
+  calledNumbers   Int[]    @default([]) // Array of called numbers in order (1-90)
+  currentSequence Int      @default(0)  // Count of numbers called so far
+  startedAt       DateTime?             // When game was started
+  completedAt     DateTime?             // When game completed (all 90 or Full House)
+
+  patterns GamePattern[]
+  players  Player[]
+  tickets  Ticket[]
 
   @@index([hostId])
   @@index([status])

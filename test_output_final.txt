@@ -1,0 +1,70 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/home/digni/Documents/Projects/tambola[39m
+
+ [32m✓[39m src/features/game/lib/number-generator.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 119[2mms[22m[39m
+ [32m✓[39m src/app/api/games/[gameId]/call-number/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 118[2mms[22m[39m
+ [32m✓[39m src/features/game/lib/validation.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+ [32m✓[39m src/app/api/games/[gameId]/start/route.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32m✓[39m src/app/api/games/[gameId]/join/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 115[2mms[22m[39m
+[90mstderr[2m | src/features/game/components/GameList.test.tsx[2m > [22m[2mGameList Component[2m > [22m[2mshould render loading state initially
+[22m[39mFailed to load games TypeError: Cannot read properties of undefined (reading 'ok')
+    at fetchGames [90m(/home/digni/Documents/Projects/tambola/[39msrc/features/game/components/GameList.tsx:36:22[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+
+ [32m✓[39m src/features/game/components/TicketDisplay.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 502[2mms[22m[39m
+ [32m✓[39m src/features/game/components/LobbyPlayerList.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 381[2mms[22m[39m
+[90mstderr[2m | src/features/game/components/GameList.test.tsx[2m > [22m[2mGameList Component[2m > [22m[2mshould render error state on fetch failure
+[22m[39mFailed to load games Error: Network error
+    at [90m/home/digni/Documents/Projects/tambola/[39msrc/features/game/components/GameList.test.tsx:42:7
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+ [32m✓[39m src/features/game/lib/ticket-generator.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 784[2mms[22m[39m
+     [33m[2m✓[22m[39m should generate robustly (bulk test) [33m 695[2mms[22m[39m
+ [32m✓[39m src/features/game/components/GameList.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1165[2mms[22m[39m
+     [33m[2m✓[22m[39m should render games list when games are returned [33m 807[2mms[22m[39m
+[90mstderr[2m | src/features/game/components/PlayerJoinForm.test.tsx[2m > [22m[2mPlayerJoinForm[2m > [22m[2mshould handle network error
+[22m[39mJoin error: Error: Network error
+    at [90m/home/digni/Documents/Projects/tambola/[39msrc/features/game/components/PlayerJoinForm.test.tsx:215:7
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.U4xDYhzZ.js:115:27[90m)[39m
+    at trace [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///home/digni/Documents/Projects/tambola/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+ [32m✓[39m src/features/game/components/PlayerJoinForm.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1658[2mms[22m[39m
+     [33m[2m✓[22m[39m should render join form with name input [33m 820[2mms[22m[39m
+ [32m✓[39m src/app/api/games/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/features/game/components/HostStartButton.test.tsx[2m [ src/features/game/components/HostStartButton.test.tsx ][22m
+[31m[1mReferenceError[22m: expect is not defined[39m
+[90m [2m❯[22m node_modules/@testing-library/jest-dom/dist/index.mjs:[2m9:1[22m[39m
+[36m [2m❯[22m src/features/game/components/HostStartButton.test.tsx:[2m17:1[22m[39m
+    [90m 15| [39m  act[33m,[39m
+    [90m 16| [39m} [35mfrom[39m [32m"@testing-library/react"[39m[33m;[39m
+    [90m 17| [39m[35mimport[39m [32m"@testing-library/jest-dom"[39m[33m;[39m
+    [90m   | [39m[31m^[39m
+    [90m 18| [39m[35mimport[39m { [33mHostStartButton[39m } [35mfrom[39m [32m"./HostStartButton"[39m[33m;[39m
+    [90m 19| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[32m82 passed[39m[22m[90m (82)[39m
+[2m   Start at [22m 16:53:01
+[2m   Duration [22m 12.35s[2m (transform 7.18s, setup 17.29s, import 11.03s, tests 5.10s, environment 55.82s)[22m
+
