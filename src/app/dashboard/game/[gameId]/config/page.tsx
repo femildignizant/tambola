@@ -55,7 +55,7 @@ export default async function GameConfigPage(props: PageProps) {
   };
 
   return (
-    <div className="container max-w-3xl py-8 space-y-8">
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
           Game Configuration

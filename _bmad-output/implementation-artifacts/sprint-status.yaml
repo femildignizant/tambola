@@ -50,18 +50,18 @@ development_status:
   epic-1-retrospective: done
 
   # Epic 2
-  epic-2: in-progress
+  epic-2: done
   2-1-database-schema-for-games-patterns: done
   2-2-create-game-with-title: done
   2-3-configure-prize-patterns: done
   2-4-configure-game-settings: done
   2-5-generate-shareable-link-game-code: done
   2-6-host-dashboard-with-game-list: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
 
   # Epic 3
-  epic-3: backlog
-  3-1-tambola-ticket-generator-logic: backlog
+  epic-3: in-progress
+  3-1-tambola-ticket-generator-logic: done
   3-2-player-joining-api-ticket-assignment: backlog
   3-3-real-time-lobby-player-count: backlog
   3-4-host-start-game-control: backlog
