@@ -4,6 +4,9 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/features/game/game-store";
 import { TicketDisplay } from "@/features/game/components/TicketDisplay";
+import { NumberDisplay } from "@/features/game/components/NumberDisplay";
+import { NumberHistory } from "@/features/game/components/NumberHistory";
+import { useNumberAnnouncer } from "@/features/game/hooks/useNumberAnnouncer";
 import { pusherClient } from "@/lib/pusher-client";
 import { Loader2, Volume2, VolumeX } from "lucide-react";
 import {
@@ -19,25 +22,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+import { NumberCalledEvent, GameEndedEvent } from "@/types/events";
+
 interface PlayPageClientProps {
   gameId: string;
   gameTitle: string;
   numberInterval?: number;
   initialCalledNumbers?: number[];
   isHost?: boolean;
-}
-
-interface NumberCalledEvent {
-  number: number;
-  sequence: number;
-  timestamp: string;
-  remaining: number;
-}
-
-interface GameEndedEvent {
-  reason: "ALL_NUMBERS_CALLED" | "FULL_HOUSE_CLAIMED";
-  finalSequence: number;
-  completedAt: string;
 }
 
 export function PlayPageClient({
@@ -61,9 +53,10 @@ export function PlayPageClient({
     setGameEnded,
   } = useGameStore();
 
+  const { isMuted, toggleMute, announceNumber } = useNumberAnnouncer();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
   const [isCallingNumber, setIsCallingNumber] = useState(false);
 
   // Initialize with server state
@@ -105,11 +98,7 @@ export function PlayPageClient({
 
     channel.bind("number:called", (data: NumberCalledEvent) => {
       addCalledNumber(data.number, data.sequence);
-
-      // Play sound if not muted
-      if (!isMuted) {
-        // Sound will be implemented in Story 4.2
-      }
+      announceNumber(data.number);
     });
 
     channel.bind("game:ended", (data: GameEndedEvent) => {
@@ -131,32 +120,26 @@ export function PlayPageClient({
       channel.unbind_all();
       pusherClient.unsubscribe(`game-${gameId}`);
     };
-  }, [gameId, addCalledNumber, setGameEnded, router, isMuted]);
+  }, [gameId, addCalledNumber, setGameEnded, router, announceNumber]);
 
   // Host-only: Start the number calling loop
   useEffect(() => {
     if (isHost && !isGameEnded && !loading) {
-      // Start calling numbers at the configured interval
-      intervalRef.current = setInterval(
-        callNextNumber,
-        numberInterval * 1000
-      );
-
-      // Only do the initial delay call if no numbers have been called yet (fresh game start)
-      // and we are just mounting.
+      // If no numbers called yet, do the initial countdown
       if (calledNumbers.length === 0) {
         const initialDelay = setTimeout(() => {
           callNextNumber();
         }, 3000); // 3 second countdown before first number
         
-        return () => {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
-          clearTimeout(initialDelay);
-        };
-      }
+        return () => clearTimeout(initialDelay);
+      } 
+      
+      // Otherwise, run the regular interval
+      // This will start AFTER the first number is called and state updates
+      intervalRef.current = setInterval(
+        callNextNumber,
+        numberInterval * 1000
+      );
 
       return () => {
         if (intervalRef.current) {
@@ -215,9 +198,6 @@ export function PlayPageClient({
     fetchPlayerData();
   }, [gameId, setCurrentPlayer]);
 
-  // Get last 10 called numbers for history display
-  const calledNumbersHistory = calledNumbers.slice(-10).reverse();
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
@@ -271,7 +251,7 @@ export function PlayPageClient({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={toggleMute}
                 aria-label={isMuted ? "Unmute" : "Mute"}
               >
                 {isMuted ? (
@@ -283,15 +263,7 @@ export function PlayPageClient({
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center justify-center py-8">
-                {currentNumber ? (
-                  <div className="text-8xl font-bold text-primary animate-pulse">
-                    {currentNumber}
-                  </div>
-                ) : (
-                  <div className="text-2xl text-muted-foreground">
-                    Waiting for first number...
-                  </div>
-                )}
+                <NumberDisplay currentNumber={currentNumber} />
                 <p className="text-muted-foreground mt-4">
                   {gameSequence} / 90 numbers called
                 </p>
@@ -301,32 +273,8 @@ export function PlayPageClient({
 
           {/* Called Numbers History */}
           <Card>
-            <CardHeader>
-              <CardTitle>Last 10 Numbers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {calledNumbersHistory.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {calledNumbersHistory.map((num, index) => (
-                    <div
-                      key={num}
-                      className={`
-                        w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg
-                        ${index === 0 
-                          ? "bg-primary text-primary-foreground" 
-                          : "bg-muted text-muted-foreground"
-                        }
-                      `}
-                    >
-                      {num}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-center py-4">
-                  No numbers called yet
-                </p>
-              )}
+            <CardContent className="pt-6">
+              <NumberHistory calledNumbers={calledNumbers} />
             </CardContent>
           </Card>
 

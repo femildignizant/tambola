@@ -70,7 +70,7 @@ development_status:
   # Epic 4
   epic-4: in-progress
   4-1-game-loop-number-generator: review
-  4-2-real-time-number-display-announcement: backlog
+  4-2-real-time-number-display-announcement: review
   4-3-interactive-ticket-marking: backlog
   4-4-called-comparison-history: backlog
   epic-4-retrospective: optional
