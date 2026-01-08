@@ -108,6 +108,8 @@ model Game {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   patterns       GamePattern[]
+  players        Player[]
+  tickets        Ticket[]
 
   @@index([hostId])
   @@index([status])
@@ -130,4 +132,35 @@ model GamePattern {
   @@unique([gameId, pattern])
   @@index([gameId])
   @@map("gamePattern")
+}
+
+model Player {
+  id       String   @id @default(cuid())
+  gameId   String
+  userId   String? // Optional: can be guest
+  name     String
+  socketId String? // Optional: for direct messaging if needed
+  joinedAt DateTime @default(now())
+
+  game    Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@index([gameId])
+  @@index([userId])
+  @@map("player")
+}
+
+model Ticket {
+  id        String   @id @default(cuid())
+  playerId  String
+  gameId    String
+  grid      Json // 3x9 grid structure
+  createdAt DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([playerId])
+  @@index([gameId])
+  @@map("ticket")
 }
