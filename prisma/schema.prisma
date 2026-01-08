@@ -96,27 +96,28 @@ enum Pattern {
 }
 
 model Game {
-  id             String        @id @default(cuid())
-  title          String        @db.VarChar(100)
+  id             String     @id @default(cuid())
+  title          String     @db.VarChar(100)
   hostId         String
-  host           User          @relation(fields: [hostId], references: [id], onDelete: Cascade)
-  status         GameStatus    @default(CONFIGURING)
-  gameCode       String        @unique @db.VarChar(6)
-  numberInterval Int           @default(10) // seconds: 7, 10, or 15
-  minPlayers     Int           @default(2)
-  maxPlayers     Int           @default(75)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  host           User       @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  status         GameStatus @default(CONFIGURING)
+  gameCode       String     @unique @db.VarChar(6)
+  numberInterval Int        @default(10) // seconds: 7, 10, or 15
+  minPlayers     Int        @default(2)
+  maxPlayers     Int        @default(75)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   // Story 4.1: Game Loop fields
-  calledNumbers   Int[]    @default([]) // Array of called numbers in order (1-90)
-  currentSequence Int      @default(0)  // Count of numbers called so far
-  startedAt       DateTime?             // When game was started
-  completedAt     DateTime?             // When game completed (all 90 or Full House)
+  calledNumbers   Int[]     @default([]) // Array of called numbers in order (1-90)
+  currentSequence Int       @default(0) // Count of numbers called so far
+  startedAt       DateTime? // When game was started
+  completedAt     DateTime? // When game completed (all 90 or Full House)
 
   patterns GamePattern[]
   players  Player[]
   tickets  Ticket[]
+  claims   Claim[]
 
   @@index([hostId])
   @@index([status])
@@ -151,6 +152,7 @@ model Player {
 
   game    Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
   tickets Ticket[]
+  claims  Claim[]
 
   @@index([gameId])
   @@index([userId])
@@ -170,4 +172,22 @@ model Ticket {
   @@index([playerId])
   @@index([gameId])
   @@map("ticket")
+}
+
+model Claim {
+  id        String   @id @default(cuid())
+  gameId    String
+  playerId  String
+  pattern   Pattern
+  rank      Int      @default(1) // 1st, 2nd, 3rd place for tiered scoring
+  points    Int
+  claimedAt DateTime @default(now())
+
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, pattern, rank]) // Only one winner per pattern per rank
+  @@index([gameId])
+  @@index([playerId])
+  @@map("claim")
 }

@@ -64,6 +64,27 @@ interface GameStore {
   addCalledNumber: (number: number, sequence: number) => void;
   setGameEnded: () => void;
   resetGameLoopState: () => void;
+
+  // Claim State (Story 5.2)
+  isClaiming: boolean;
+  claimError: string | null;
+  claimedPatterns: ClaimedPattern[];
+
+  // Claim Actions (Story 5.2)
+  setIsClaiming: (isClaiming: boolean) => void;
+  setClaimError: (error: string | null) => void;
+  addClaimedPattern: (pattern: ClaimedPattern) => void;
+  setClaimedPatterns: (patterns: ClaimedPattern[]) => void;
+  resetClaimState: () => void;
+}
+
+interface ClaimedPattern {
+  pattern: string;
+  rank: number;
+  points: number;
+  playerId: string;
+  playerName: string;
+  claimedAt: string;
 }
 
 const initialState = {
@@ -77,6 +98,10 @@ const initialState = {
   currentNumber: null,
   gameSequence: 0,
   isGameEnded: false,
+  // Claim state (Story 5.2)
+  isClaiming: false,
+  claimError: null as string | null,
+  claimedPatterns: [] as ClaimedPattern[],
 };
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -115,7 +140,8 @@ export const useGameStore = create<GameStore>((set) => ({
   setCalledNumbers: (numbers) =>
     set({
       calledNumbers: numbers,
-      currentNumber: numbers.length > 0 ? numbers[numbers.length - 1] : null,
+      currentNumber:
+        numbers.length > 0 ? numbers[numbers.length - 1] : null,
       gameSequence: numbers.length,
     }),
 
@@ -129,7 +155,9 @@ export const useGameStore = create<GameStore>((set) => ({
   setGameEnded: () =>
     set((state) => ({
       isGameEnded: true,
-      game: state.game ? { ...state.game, status: "COMPLETED" } : null,
+      game: state.game
+        ? { ...state.game, status: "COMPLETED" }
+        : null,
     })),
 
   resetGameLoopState: () =>
@@ -139,5 +167,23 @@ export const useGameStore = create<GameStore>((set) => ({
       gameSequence: 0,
       isGameEnded: false,
     }),
-}));
 
+  // Claim Actions (Story 5.2)
+  setIsClaiming: (isClaiming) => set({ isClaiming }),
+
+  setClaimError: (claimError) => set({ claimError }),
+
+  addClaimedPattern: (pattern) =>
+    set((state) => ({
+      claimedPatterns: [...state.claimedPatterns, pattern],
+    })),
+
+  setClaimedPatterns: (claimedPatterns) => set({ claimedPatterns }),
+
+  resetClaimState: () =>
+    set({
+      isClaiming: false,
+      claimError: null,
+      claimedPatterns: [], // Reset claimed patterns to prevent stale data
+    }),
+}));

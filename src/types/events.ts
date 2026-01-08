@@ -10,3 +10,11 @@ export interface GameEndedEvent {
   finalSequence: number;
   completedAt: string;
 }
+
+export interface PlayPageClientProps {
+  gameId: string;
+  gameTitle: string;
+  numberInterval?: number;
+  initialCalledNumbers?: number[];
+  isHost?: boolean;
+}

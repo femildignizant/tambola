@@ -78,7 +78,7 @@ development_status:
   # Epic 5
   epic-5: in-progress
   5-1-claim-verification-logic: done
-  5-2-initiating-a-claim: ready-for-dev
+  5-2-initiating-a-claim: done
   5-3-claim-result-announcement: backlog
   5-4-pattern-completion-leaderboard: backlog
   5-5-game-completion-full-house-force-stop: backlog

@@ -7,8 +7,9 @@ import { TicketDisplay } from "@/features/game/components/TicketDisplay";
 import { NumberDisplay } from "@/features/game/components/NumberDisplay";
 import { NumberHistory } from "@/features/game/components/NumberHistory";
 import { useNumberAnnouncer } from "@/features/game/hooks/useNumberAnnouncer";
+import { ClaimModal } from "@/features/game/components/ClaimModal";
 import { pusherClient } from "@/lib/pusher-client";
-import { Loader2, Volume2, VolumeX } from "lucide-react";
+import { Loader2, Volume2, VolumeX, Trophy } from "lucide-react";
 import {
   Alert,
   AlertDescription,
@@ -22,14 +23,22 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { NumberCalledEvent, GameEndedEvent } from "@/types/events";
+import type {
+  PlayPageClientProps,
+  NumberCalledEvent,
+  GameEndedEvent,
+} from "@/types/events";
 
-interface PlayPageClientProps {
-  gameId: string;
-  gameTitle: string;
-  numberInterval?: number;
-  initialCalledNumbers?: number[];
-  isHost?: boolean;
+interface ClaimAcceptedEvent {
+  claim: {
+    id: string;
+    playerId: string;
+    playerName: string;
+    pattern: string;
+    rank: number;
+    points: number;
+    claimedAt: string;
+  };
 }
 
 export function PlayPageClient({
@@ -53,11 +62,13 @@ export function PlayPageClient({
     setGameEnded,
   } = useGameStore();
 
-  const { isMuted, toggleMute, announceNumber } = useNumberAnnouncer();
+  const { isMuted, toggleMute, announceNumber } =
+    useNumberAnnouncer();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCallingNumber, setIsCallingNumber] = useState(false);
+  const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
 
   // Initialize with server state
   useEffect(() => {
@@ -75,9 +86,12 @@ export function PlayPageClient({
     isCallingRef.current = true;
     setIsCallingNumber(true); // Keep for UI state if needed, but logic uses ref
     try {
-      const response = await fetch(`/api/games/${gameId}/call-number`, {
-        method: "POST",
-      });
+      const response = await fetch(
+        `/api/games/${gameId}/call-number`,
+        {
+          method: "POST",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -95,10 +109,22 @@ export function PlayPageClient({
   // Subscribe to Pusher events
   useEffect(() => {
     const channel = pusherClient.subscribe(`game-${gameId}`);
+    const { addClaimedPattern } = useGameStore.getState();
 
     channel.bind("number:called", (data: NumberCalledEvent) => {
       addCalledNumber(data.number, data.sequence);
       announceNumber(data.number);
+    });
+
+    channel.bind("claim:accepted", (data: ClaimAcceptedEvent) => {
+      addClaimedPattern({
+        pattern: data.claim.pattern,
+        rank: data.claim.rank,
+        points: data.claim.points,
+        playerId: data.claim.playerId,
+        playerName: data.claim.playerName,
+        claimedAt: data.claim.claimedAt,
+      });
     });
 
     channel.bind("game:ended", (data: GameEndedEvent) => {
@@ -130,10 +156,10 @@ export function PlayPageClient({
         const initialDelay = setTimeout(() => {
           callNextNumber();
         }, 3000); // 3 second countdown before first number
-        
+
         return () => clearTimeout(initialDelay);
-      } 
-      
+      }
+
       // Otherwise, run the regular interval
       // This will start AFTER the first number is called and state updates
       intervalRef.current = setInterval(
@@ -148,7 +174,14 @@ export function PlayPageClient({
         }
       };
     }
-  }, [isHost, isGameEnded, loading, numberInterval, callNextNumber, calledNumbers.length]);
+  }, [
+    isHost,
+    isGameEnded,
+    loading,
+    numberInterval,
+    callNextNumber,
+    calledNumbers.length,
+  ]);
 
   // Fetch player data on mount
   useEffect(() => {
@@ -273,7 +306,10 @@ export function PlayPageClient({
 
           {/* Called Numbers History */}
           <Card>
-            <CardContent className="pt-6">
+            <CardHeader>
+              <CardTitle>Last 10 Numbers</CardTitle>
+            </CardHeader>
+            <CardContent>
               <NumberHistory calledNumbers={calledNumbers} />
             </CardContent>
           </Card>
@@ -283,22 +319,39 @@ export function PlayPageClient({
             <Alert>
               <AlertTitle>Game Over!</AlertTitle>
               <AlertDescription>
-                All 90 numbers have been called. Redirecting to results...
+                All 90 numbers have been called. Redirecting to
+                results...
               </AlertDescription>
             </Alert>
           ) : (
-            <Alert>
-              <AlertTitle>Status</AlertTitle>
-              <AlertDescription>
-                {isHost
-                  ? "You are the host. Numbers are being called automatically."
-                  : "The game has started. Good luck!"}
-              </AlertDescription>
-            </Alert>
+            <div className="space-y-4">
+              <Button
+                onClick={() => setIsClaimModalOpen(true)}
+                className="w-full"
+                size="lg"
+                variant="default"
+              >
+                <Trophy className="h-5 w-5 mr-2" />
+                Claim Prize
+              </Button>
+              <Alert>
+                <AlertTitle>Status</AlertTitle>
+                <AlertDescription>
+                  {isHost
+                    ? "You are the host. Numbers are being called automatically."
+                    : "The game has started. Good luck!"}
+                </AlertDescription>
+              </Alert>
+            </div>
           )}
         </div>
       </div>
+
+      <ClaimModal
+        gameId={gameId}
+        isOpen={isClaimModalOpen}
+        onClose={() => setIsClaimModalOpen(false)}
+      />
     </div>
   );
 }
-
