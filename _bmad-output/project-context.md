@@ -217,6 +217,8 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Zustand** (State management patterns)
 - **Pusher** (Real-time integration)
 - **shadcn/ui** (Component usage)
+- **pnpm** (Node package manager)
+- **context7 MCP** (For getting documentation)
 
 **Why?** To prevent "version drift" issues (e.g., mismatched boilerplate vs current library versions). Always check current docs before implementation.
 

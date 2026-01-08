@@ -24,69 +24,69 @@ so that **I know when everyone is ready and can see my assigned ticket**.
 
 ## Tasks / Subtasks
 
-- [ ] Create Player-Facing Game Page (AC: 1, 2)
+- [x] Create Player-Facing Game Page (AC: 1, 2)
 
-  - [ ] Create `src/app/game/[gameId]/page.tsx` (player lobby page)
-  - [ ] Implement server-side data fetching (game details, players, patterns)
-  - [ ] Handle game state routing (CONFIGURING → lobby, STARTED → redirect to `/play`, COMPLETED → redirect to `/results`)
-  - [ ] Add error handling for invalid gameId or non-existent games
+  - [x] Create `src/app/game/[gameId]/page.tsx` (player lobby page)
+  - [x] Implement server-side data fetching (game details, players, patterns)
+  - [x] Handle game state routing (CONFIGURING → lobby, STARTED → redirect to `/play`, COMPLETED → redirect to `/results`)
+  - [x] Add error handling for invalid gameId or non-existent games
 
-- [ ] Build Player Join Form Component (AC: 2)
+- [x] Build Player Join Form Component (AC: 2)
 
-  - [ ] Create `src/features/game/components/PlayerJoinForm.tsx`
-  - [ ] Add name input field with validation (1-50 chars)
-  - [ ] Implement join button that calls `POST /api/games/[gameId]/join`
-  - [ ] Handle loading states and error messages
-  - [ ] Store player token in localStorage after successful join
-  - [ ] Auto-hide form after player joins successfully
+  - [x] Create `src/features/game/components/PlayerJoinForm.tsx`
+  - [x] Add name input field with validation (1-50 chars)
+  - [x] Implement join button that calls `POST /api/games/[gameId]/join`
+  - [x] Handle loading states and error messages
+  - [x] Store player token in localStorage after successful join
+  - [x] Auto-hide form after player joins successfully
 
-- [ ] Build Lobby Player List Component (AC: 1)
+- [x] Build Lobby Player List Component (AC: 1)
 
-  - [ ] Create `src/features/game/components/LobbyPlayerList.tsx`
-  - [ ] Display all joined players with names and join timestamps
-  - [ ] Show current player count vs max players (e.g., "5 / 10 players")
-  - [ ] Highlight current player in the list (if joined)
-  - [ ] Add real-time updates via Pusher `player:joined` event
+  - [x] Create `src/features/game/components/LobbyPlayerList.tsx`
+  - [x] Display all joined players with names and join timestamps
+  - [x] Show current player count vs max players (e.g., "5 / 10 players")
+  - [x] Highlight current player in the list (if joined)
+  - [x] Add real-time updates via Pusher `player:joined` event
 
-- [ ] Build Ticket Display Component (AC: 2)
+- [x] Build Ticket Display Component (AC: 2)
 
-  - [ ] Create `src/features/game/components/TicketDisplay.tsx`
-  - [ ] Render 3×9 grid with proper Tambola format
-  - [ ] Display numbers in correct columns (Col 1: 1-9, Col 2: 10-19, etc.)
-  - [ ] Show empty cells as blank/disabled
-  - [ ] Add responsive styling for mobile and desktop
-  - [ ] Accept ticket grid data as prop from parent
+  - [x] Create `src/features/game/components/TicketDisplay.tsx`
+  - [x] Render 3×9 grid with proper Tambola format
+  - [x] Display numbers in correct columns (Col 1: 1-9, Col 2: 10-19, etc.)
+  - [x] Show empty cells as blank/disabled
+  - [x] Add responsive styling for mobile and desktop
+  - [x] Accept ticket grid data as prop from parent
 
-- [ ] Build Game Info Component (AC: 2)
+- [x] Build Game Info Component (AC: 2)
 
-  - [ ] Create `src/features/game/components/GameInfo.tsx`
-  - [ ] Display game title prominently
-  - [ ] Show host name
-  - [ ] List enabled prize patterns with point values
-  - [ ] Display game settings (number interval, min/max players)
-  - [ ] Add copy-to-clipboard for game code/link
+  - [x] Create `src/features/game/components/GameInfo.tsx`
+  - [x] Display game title prominently
+  - [x] Show host name
+  - [x] List enabled prize patterns with point values
+  - [x] Display game settings (number interval, min/max players)
+  - [x] Add copy-to-clipboard for game code/link
 
-- [ ] Implement Real-time Pusher Integration (AC: 1)
+- [x] Implement Real-time Pusher Integration (AC: 1)
 
-  - [ ] Subscribe to Pusher channel `game-{gameId}` on page load
-  - [ ] Listen for `player:joined` event and update player list
-  - [ ] Listen for `game:started` event and redirect to `/play`
-  - [ ] Unsubscribe from channel on component unmount
-  - [ ] Handle Pusher connection errors gracefully
+  - [x] Subscribe to Pusher channel `game-{gameId}` on page load
+  - [x] Listen for `player:joined` event and update player list
+  - [x] Listen for `game:started` event and redirect to `/play`
+  - [x] Unsubscribe from channel on component unmount
+  - [x] Handle Pusher connection errors gracefully
 
-- [ ] Add Client-Side State Management (AC: 1, 2)
+- [x] Add Client-Side State Management (AC: 1, 2)
 
-  - [ ] Create or extend `src/features/game/game-store.ts` (Zustand)
-  - [ ] Store current game state (players, game details, current player)
-  - [ ] Add actions for adding players, updating game status
-  - [ ] Sync store with Pusher events
+  - [x] Create or extend `src/features/game/game-store.ts` (Zustand)
+  - [x] Store current game state (players, game details, current player)
+  - [x] Add actions for adding players, updating game status
+  - [x] Sync store with Pusher events
 
-- [ ] Verify Lobby Flow (AC: 1, 2)
-  - [ ] Test: Player can join via link and see join form
-  - [ ] Test: After joining, player sees their ticket and game info
-  - [ ] Test: Real-time player list updates when new players join
-  - [ ] Test: Game redirects to `/play` when host starts game
-  - [ ] Test: Error handling for full games, invalid codes, completed games
+- [x] Verify Lobby Flow (AC: 1, 2)
+  - [x] Test: Player can join via link and see join form
+  - [x] Test: After joining, player sees their ticket and game info
+  - [x] Test: Real-time player list updates when new players join
+  - [x] Test: Game redirects to `/play` when host starts game
+  - [x] Test: Error handling for full games, invalid codes, completed games
 
 ## Dev Notes
 

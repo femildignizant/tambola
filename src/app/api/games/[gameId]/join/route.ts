@@ -65,6 +65,14 @@ export async function POST(
     // 4. Transaction: Create Player and Ticket
     const { player, ticket } = await prisma.$transaction(
       async (tx) => {
+        // Transition game to LOBBY status if not already (e.g. on first join)
+        if (game.status === "CONFIGURING") {
+          await tx.game.update({
+            where: { id: gameId },
+            data: { status: "LOBBY" },
+          });
+        }
+
         const player = await tx.player.create({
           data: {
             gameId,

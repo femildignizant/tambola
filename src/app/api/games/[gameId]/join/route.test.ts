@@ -11,6 +11,7 @@ vi.mock("@/lib/prisma", () => {
   const mockPrisma = {
     game: {
       findUnique: vi.fn(),
+      update: vi.fn(),
     },
     player: {
       create: vi.fn(),
@@ -104,6 +105,10 @@ describe("POST /api/games/[gameId]/join", () => {
         player: expect.objectContaining({ name: "Alice" }),
       })
     );
+    expect(prisma.game.update).toHaveBeenCalledWith({
+      where: { id: gameId },
+      data: { status: "LOBBY" },
+    });
   });
 
   it("should return 404 if game not found", async () => {

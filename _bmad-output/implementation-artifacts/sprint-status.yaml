@@ -64,12 +64,12 @@ development_status:
   3-1-tambola-ticket-generator-logic: done
   3-2-player-joining-api-ticket-assignment: done
   3-3-real-time-lobby-player-count: done
-  3-4-host-start-game-control: backlog
+  3-4-host-start-game-control: done
   epic-3-retrospective: optional
 
   # Epic 4
-  epic-4: backlog
-  4-1-game-loop-number-generator: backlog
+  epic-4: in-progress
+  4-1-game-loop-number-generator: ready-for-dev
   4-2-real-time-number-display-announcement: backlog
   4-3-interactive-ticket-marking: backlog
   4-4-called-comparison-history: backlog

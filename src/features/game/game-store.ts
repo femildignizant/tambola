@@ -11,7 +11,7 @@ interface GameDetails {
   title: string;
   hostId: string;
   hostName: string;
-  status: "CONFIGURING" | "STARTED" | "COMPLETED";
+  status: "CONFIGURING" | "LOBBY" | "STARTED" | "COMPLETED";
   gameCode: string;
   numberInterval: number;
   minPlayers: number;
