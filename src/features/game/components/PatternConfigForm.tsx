@@ -43,7 +43,7 @@ const PatternNames: Record<string, string> = {
   FULL_HOUSE: "Full House",
 };
 
-import { GamePattern } from "@prisma/client";
+import { GamePattern } from "@/generated/prisma/client";
 
 interface PatternConfigFormProps {
   gameId: string;

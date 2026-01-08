@@ -82,3 +82,44 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const games = await prisma.game.findMany({
+      where: {
+        hostId: session.user.id,
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        createdAt: true,
+        minPlayers: true,
+        maxPlayers: true,
+        gameCode: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json({ data: games }, { status: 200 });
+  } catch (error) {
+    console.error("Get games error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

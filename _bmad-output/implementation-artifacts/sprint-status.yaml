@@ -56,7 +56,7 @@ development_status:
   2-3-configure-prize-patterns: done
   2-4-configure-game-settings: done
   2-5-generate-shareable-link-game-code: done
-  2-6-host-dashboard-with-game-list: backlog
+  2-6-host-dashboard-with-game-list: done
   epic-2-retrospective: optional
 
   # Epic 3

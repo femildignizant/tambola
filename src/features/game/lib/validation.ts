@@ -53,6 +53,8 @@ export const gamePatternSchema = z.object({
   ),
 });
 
+export type GamePatternsInput = z.infer<typeof gamePatternSchema>;
+
 import {
   GAME_INTERVALS,
   MAX_PLAYERS,
