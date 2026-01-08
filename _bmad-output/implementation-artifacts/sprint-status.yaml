@@ -63,7 +63,7 @@ development_status:
   epic-3: in-progress
   3-1-tambola-ticket-generator-logic: done
   3-2-player-joining-api-ticket-assignment: done
-  3-3-real-time-lobby-player-count: backlog
+  3-3-real-time-lobby-player-count: done
   3-4-host-start-game-control: backlog
   epic-3-retrospective: optional
 
