@@ -49,6 +49,9 @@ interface GameStore {
   gameSequence: number;
   isGameEnded: boolean;
 
+  // Ticket State (Story 4.3)
+  markedNumbers: number[];
+
   // Actions
   setGame: (game: GameDetails) => void;
   setPlayers: (players: Player[]) => void;
@@ -85,6 +88,9 @@ interface ClaimedPattern {
   playerId: string;
   playerName: string;
   claimedAt: string;
+  // Ticket Actions (Story 4.3)
+  toggleMark: (number: number) => void;
+  setMarkedNumbers: (numbers: number[]) => void;
 }
 
 const initialState = {
@@ -102,9 +108,10 @@ const initialState = {
   isClaiming: false,
   claimError: null as string | null,
   claimedPatterns: [] as ClaimedPattern[],
+  markedNumbers: [],
 };
 
-export const useGameStore = create<GameStore>((set) => ({
+export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
   setGame: (game) => set({ game }),
@@ -167,6 +174,47 @@ export const useGameStore = create<GameStore>((set) => ({
       gameSequence: 0,
       isGameEnded: false,
     }),
+
+  // Ticket Actions (Story 4.3)
+  toggleMark: async (number: number) => {
+    const state = get();
+    const isMarked = state.markedNumbers.includes(number);
+    const newMarkedNumbers = isMarked
+      ? state.markedNumbers.filter((n) => n !== number)
+      : [...state.markedNumbers, number];
+
+    // Optimistic update
+    set({ markedNumbers: newMarkedNumbers });
+
+    // API Call
+    try {
+      const gameId = state.game?.id;
+      const token = state.currentPlayer?.token;
+      if (!gameId || !token) return;
+
+      const response = await fetch(`/api/games/${gameId}/ticket/mark`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          number,
+          action: isMarked ? "UNMARK" : "MARK",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to sync mark");
+      }
+    } catch (error) {
+      console.error("Mark sync failed:", error);
+      // Revert on error
+      set({ markedNumbers: state.markedNumbers });
+    }
+  },
+
+  setMarkedNumbers: (numbers: number[]) => set({ markedNumbers: numbers }),
 
   // Claim Actions (Story 5.2)
   setIsClaiming: (isClaiming) => set({ isClaiming }),

@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/features/game/game-store";
-import { TicketDisplay } from "@/features/game/components/TicketDisplay";
+import { Ticket } from "@/features/game/components/Ticket";
 import { NumberDisplay } from "@/features/game/components/NumberDisplay";
 import { NumberHistory } from "@/features/game/components/NumberHistory";
 import { useNumberAnnouncer } from "@/features/game/hooks/useNumberAnnouncer";
@@ -60,6 +60,7 @@ export function PlayPageClient({
     addCalledNumber,
     setCalledNumbers,
     setGameEnded,
+    setMarkedNumbers,
   } = useGameStore();
 
   const { isMuted, toggleMute, announceNumber } =
@@ -218,6 +219,11 @@ export function PlayPageClient({
           token: result.data.token,
           ticket: result.data.ticket,
         });
+        
+        // Sync marked numbers
+        if (result.data.ticket.markedNumbers) {
+          setMarkedNumbers(result.data.ticket.markedNumbers);
+        }
       } catch (err) {
         console.error(err);
         setError(
@@ -265,13 +271,9 @@ export function PlayPageClient({
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {/* Ticket Section */}
         <div className="lg:col-span-1">
           {currentPlayer?.ticket && (
-            <TicketDisplay
-              grid={currentPlayer.ticket.grid}
-              playerName={currentPlayer.name}
-            />
+            <Ticket grid={currentPlayer.ticket.grid} />
           )}
         </div>
 

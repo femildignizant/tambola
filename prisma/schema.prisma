@@ -147,6 +147,7 @@ model Player {
   gameId   String
   userId   String? // Optional: can be guest
   name     String
+  token    String   @unique @default(cuid())
   socketId String? // Optional: for direct messaging if needed
   joinedAt DateTime @default(now())
 
@@ -164,6 +165,7 @@ model Ticket {
   playerId  String
   gameId    String
   grid      Json // 3x9 grid structure
+  markedNumbers Int[] @default([])
   createdAt DateTime @default(now())
 
   player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)

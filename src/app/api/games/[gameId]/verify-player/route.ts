@@ -25,21 +25,30 @@ export async function GET(
     const player = await prisma.player.findFirst({
       where: {
         gameId,
+        token, // Verify using the token
       },
       include: {
         tickets: {
           select: {
             id: true,
             grid: true,
+            markedNumbers: true,
           },
           take: 1,
         },
       },
     });
 
-    if (!player || !player.tickets || player.tickets.length === 0) {
+    if (!player) {
       return NextResponse.json(
         { error: "Invalid token or player not found" },
+        { status: 404 }
+      );
+    }
+
+    if (!player.tickets || player.tickets.length === 0) {
+      return NextResponse.json(
+        { error: "Player has no ticket" },
         { status: 404 }
       );
     }
@@ -56,6 +65,7 @@ export async function GET(
         ticket: {
           id: ticket.id,
           grid: ticket.grid,
+          markedNumbers: ticket.markedNumbers,
         },
         token,
       },
