@@ -68,7 +68,7 @@ development_status:
   epic-3-retrospective: done
 
   # Epic 4
-  epic-4: in-progress
+  epic-4: done
   4-1-game-loop-number-generator: done
   4-2-real-time-number-display-announcement: done
   4-3-interactive-ticket-marking: done

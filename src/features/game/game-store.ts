@@ -80,6 +80,7 @@ export interface GameStore {
   setClaimedPatterns: (patterns: ClaimedPattern[]) => void;
   resetClaimState: () => void;
   toggleMark: (number: number) => void;
+  setMarkedNumbers: (numbers: number[]) => void;
 }
 
 interface ClaimedPattern {
@@ -89,9 +90,6 @@ interface ClaimedPattern {
   playerId: string;
   playerName: string;
   claimedAt: string;
-  // Ticket Actions (Story 4.3)
-  toggleMark: (number: number) => void;
-  setMarkedNumbers: (numbers: number[]) => void;
 }
 
 const initialState = {
@@ -115,7 +113,10 @@ const initialState = {
 export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
-  setGame: (game) => set({ game }),
+  setGame: (game) => {
+    console.log("🏪 Store setGame called with:", game);
+    set({ game });
+  },
 
   setPlayers: (players) => set({ players }),
 

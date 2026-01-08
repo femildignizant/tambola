@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { gameSettingsSchema } from "@/features/game/lib/validation";
+import { pusherServer } from "@/lib/pusher-server";
 
 export async function GET(
   _req: Request,
@@ -108,7 +109,18 @@ export async function PATCH(
         minPlayers,
         maxPlayers,
       },
+      include: {
+        patterns: true,
+      },
     });
+
+    console.log(
+      `🚀 Triggering Pusher event: game-${gameId} | game:updated`
+    );
+    await pusherServer.trigger(`game-${gameId}`, "game:updated", {
+      data: updatedGame,
+    });
+    console.log("✅ Pusher event triggered successfully");
 
     return NextResponse.json({ data: updatedGame });
   } catch (error) {

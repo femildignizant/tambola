@@ -191,6 +191,11 @@ export function PlayPageClient({
         const token = localStorage.getItem(`game-${gameId}-token`);
 
         if (!token) {
+          if (isHost) {
+            // Host does not need a token if they haven't joined as a player
+            setLoading(false);
+            return;
+          }
           setError(
             "No player token found. Please join the game from the lobby."
           );
@@ -219,7 +224,7 @@ export function PlayPageClient({
           token: result.data.token,
           ticket: result.data.ticket,
         });
-        
+
         // Sync marked numbers
         if (result.data.ticket.markedNumbers) {
           setMarkedNumbers(result.data.ticket.markedNumbers);
@@ -235,7 +240,7 @@ export function PlayPageClient({
     };
 
     fetchPlayerData();
-  }, [gameId, setCurrentPlayer]);
+  }, [gameId, setCurrentPlayer, isHost, setMarkedNumbers]);
 
   if (loading) {
     return (

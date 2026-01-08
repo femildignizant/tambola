@@ -34,7 +34,7 @@ export function Ticket({ grid }: TicketProps) {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 bg-card rounded-xl shadow-lg border border-border">
-      <div className="grid grid-rows-3 gap-1 bg-muted/50 p-2 rounded-lg">
+      <div className="grid grid-rows-3 gap-1 p-2 bg-muted/30 rounded-lg">
         {parsedGrid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-9 gap-1">
             {row.map((cell, colIndex) => {
@@ -43,10 +43,9 @@ export function Ticket({ grid }: TicketProps) {
                 number !== null && markedNumbers.includes(number);
 
               return (
-                <div
+                <button
+                  type="button"
                   key={`${rowIndex}-${colIndex}`}
-                  role="button"
-                  tabIndex={number !== null ? 0 : -1}
                   aria-label={
                     number !== null
                       ? `Number ${number}, ${
@@ -56,26 +55,18 @@ export function Ticket({ grid }: TicketProps) {
                   }
                   aria-pressed={isMarked}
                   onClick={() => handleCellClick(number)}
-                  onKeyDown={(e) => {
-                    if (
-                      (e.key === "Enter" || e.key === " ") &&
-                      number !== null
-                    ) {
-                      e.preventDefault();
-                      handleCellClick(number);
-                    }
-                  }}
                   className={cn(
-                    "aspect-[4/3] flex items-center justify-center text-lg sm:text-xl font-bold rounded-md transition-all duration-200 select-none",
+                    "aspect-square flex items-center justify-center text-sm sm:text-base font-semibold rounded transition-all duration-200 select-none",
                     number === null
-                      ? "bg-transparent" // Empty cell
+                      ? "bg-muted/50 text-muted-foreground/30 pointer-events-none" // Empty cell style
                       : "bg-background border-2 border-primary/20 hover:border-primary/50 cursor-pointer shadow-sm",
                     isMarked &&
                       "bg-primary text-primary-foreground border-primary shadow-inner scale-95 transform"
                   )}
+                  disabled={number === null}
                 >
                   {number}
-                </div>
+                </button>
               );
             })}
           </div>

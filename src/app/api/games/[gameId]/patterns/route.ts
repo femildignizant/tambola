@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { gamePatternSchema } from "@/features/game/lib/validation";
 import { type NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { pusherServer } from "@/lib/pusher-server";
 
 export async function PUT(
   req: NextRequest,
@@ -84,6 +85,24 @@ export async function PUT(
         })),
       }),
     ]);
+
+    // Fetch updated game with patterns to broadcast
+    const updatedGame = await prisma.game.findUnique({
+      where: { id: gameId },
+      include: {
+        patterns: true,
+      },
+    });
+
+    if (updatedGame) {
+      console.log(
+        `🚀 Triggering Pusher event from patterns: game-${gameId} | game:updated`
+      );
+      await pusherServer.trigger(`game-${gameId}`, "game:updated", {
+        data: updatedGame,
+      });
+      console.log("✅ Patterns Pusher event triggered successfully");
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

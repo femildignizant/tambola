@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,31 +11,19 @@ import { Users } from "lucide-react";
 // Subscribe to Pusher events logic moved to GameLobbyClient to prevent connection race conditions
 import { useGameStore } from "../game-store";
 
-interface Player {
-  id: string;
-  name: string;
-  joinedAt: string;
-}
-
 interface LobbyPlayerListProps {
-  gameId: string;
-  initialPlayers: Player[];
   maxPlayers: number;
   currentPlayerId?: string;
 }
 
 export function LobbyPlayerList({
-  gameId,
-  initialPlayers,
   maxPlayers,
   currentPlayerId,
 }: LobbyPlayerListProps) {
-  const { players, setPlayers } = useGameStore();
+  const { players } = useGameStore();
 
-  // Initialize players from server-side data
-  useEffect(() => {
-    setPlayers(initialPlayers);
-  }, [initialPlayers, setPlayers]);
+  // Player initialization is now handled by GameLobbyClient to prevent overwriting local state
+  // when this component mounts after joining
 
   // Player joining updates are handled by parent GameLobbyClient via store updates
 
@@ -71,10 +58,10 @@ export function LobbyPlayerList({
             {players.map((player) => (
               <li
                 key={player.id}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
+                className={`flex items-center justify-between p-3 rounded-lg border-2 ${
                   player.id === currentPlayerId
-                    ? "bg-primary/10 border-primary"
-                    : "bg-muted/50"
+                    ? "bg-primary/5 border-foreground"
+                    : "bg-muted/50 border-transparent"
                 }`}
               >
                 <div className="flex items-center gap-2">

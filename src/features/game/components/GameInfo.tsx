@@ -27,6 +27,7 @@ interface GameInfoProps {
   minPlayers: number;
   maxPlayers: number;
   patterns: Pattern[];
+  gameId: string;
 }
 
 export function GameInfo({
@@ -37,6 +38,7 @@ export function GameInfo({
   minPlayers,
   maxPlayers,
   patterns,
+  gameId,
 }: GameInfoProps) {
   const [copied, setCopied] = useState(false);
 
@@ -52,7 +54,7 @@ export function GameInfo({
 
   const handleCopyLink = async () => {
     try {
-      const link = `${window.location.origin}/game/${gameCode}`;
+      const link = `${window.location.origin}/game/${gameId}`;
       await navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
