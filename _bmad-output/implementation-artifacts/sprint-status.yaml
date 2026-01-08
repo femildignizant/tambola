@@ -60,12 +60,12 @@ development_status:
   epic-2-retrospective: done
 
   # Epic 3
-  epic-3: in-progress
+  epic-3: done
   3-1-tambola-ticket-generator-logic: done
   3-2-player-joining-api-ticket-assignment: done
   3-3-real-time-lobby-player-count: done
   3-4-host-start-game-control: done
-  epic-3-retrospective: optional
+  epic-3-retrospective: done
 
   # Epic 4
   epic-4: in-progress
