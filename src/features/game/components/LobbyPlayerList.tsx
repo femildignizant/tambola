@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
-import { pusherClient } from "@/lib/pusher-client";
+// Subscribe to Pusher events logic moved to GameLobbyClient to prevent connection race conditions
 import { useGameStore } from "../game-store";
 
 interface Player {
@@ -31,33 +31,14 @@ export function LobbyPlayerList({
   maxPlayers,
   currentPlayerId,
 }: LobbyPlayerListProps) {
-  const { players, setPlayers, addPlayer } = useGameStore();
+  const { players, setPlayers } = useGameStore();
 
   // Initialize players from server-side data
   useEffect(() => {
     setPlayers(initialPlayers);
   }, [initialPlayers, setPlayers]);
 
-  // Memoize the player joined handler
-  const handlePlayerJoined = useCallback(
-    (data: { player: Player }) => {
-      // Check if player already exists to prevent duplicates
-      addPlayer(data.player); // The store's addPlayer should handle deduplication
-    },
-    [addPlayer]
-  );
-
-  // Subscribe to Pusher events for real-time updates
-  useEffect(() => {
-    const channel = pusherClient.subscribe(`game-${gameId}`);
-
-    channel.bind("player:joined", handlePlayerJoined);
-
-    return () => {
-      channel.unbind("player:joined");
-      pusherClient.unsubscribe(`game-${gameId}`);
-    };
-  }, [gameId, handlePlayerJoined]);
+  // Player joining updates are handled by parent GameLobbyClient via store updates
 
   const formatJoinTime = (joinedAt: string) => {
     const date = new Date(joinedAt);

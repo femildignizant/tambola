@@ -46,7 +46,8 @@ export function GameLobbyClient({
   initialPlayers,
 }: GameLobbyClientProps) {
   const router = useRouter();
-  const { setGame, currentPlayer, setCurrentPlayer } = useGameStore();
+  const { setGame, currentPlayer, setCurrentPlayer, addPlayer } =
+    useGameStore();
   const [hasJoined, setHasJoined] = useState(false);
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
@@ -125,10 +126,8 @@ export function GameLobbyClient({
     });
 
     // Listen for player:joined event (centralized here instead of LobbyPlayerList)
-    channel.bind("player:joined", (_data: { player: Player }) => {
-      // This will be handled by passing the event to LobbyPlayerList via callback
-      // For now, we'll let LobbyPlayerList handle its own subscription
-      // to avoid prop drilling, but we note this as a future refactor
+    channel.bind("player:joined", (data: { player: Player }) => {
+      addPlayer(data.player);
     });
 
     return () => {
@@ -138,7 +137,7 @@ export function GameLobbyClient({
       pusherClient.connection.unbind("error");
       pusherClient.unsubscribe(`game-${gameData.id}`);
     };
-  }, [gameData.id, router]);
+  }, [gameData.id, router, addPlayer]);
 
   const handleJoinSuccess = (data: {
     player: { id: string; name: string; joinedAt: string };
