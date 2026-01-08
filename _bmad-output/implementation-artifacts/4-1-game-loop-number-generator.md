@@ -1,6 +1,6 @@
 # Story 4.1: Game Loop & Number Generator
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -161,7 +161,10 @@ const callNextNumber = async () => {
 // Client starts interval after game:started
 useEffect(() => {
   if (gameStatus === "STARTED") {
-    const interval = setInterval(callNextNumber, numberInterval * 1000);
+    const interval = setInterval(
+      callNextNumber,
+      numberInterval * 1000
+    );
     return () => clearInterval(interval);
   }
 }, [gameStatus, numberInterval]);
@@ -278,7 +281,9 @@ const TOTAL_NUMBERS = 90;
  * @param calledNumbers Array of already called numbers
  * @returns Next number (1-90) or null if all called
  */
-export function getNextNumber(calledNumbers: number[]): number | null {
+export function getNextNumber(
+  calledNumbers: number[]
+): number | null {
   if (calledNumbers.length >= TOTAL_NUMBERS) {
     return null; // All numbers called
   }
@@ -338,7 +343,10 @@ export async function POST(
     });
 
     if (!game) {
-      return NextResponse.json({ error: "Game not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Game not found" },
+        { status: 404 }
+      );
     }
 
     if (game.status !== "STARTED") {
@@ -509,9 +517,12 @@ export function PlayGameClient({
   // Call number polling (only one client should drive this - use leader election or host-only)
   const callNextNumber = useCallback(async () => {
     try {
-      const response = await fetch(`/api/games/${gameId}/call-number`, {
-        method: "POST",
-      });
+      const response = await fetch(
+        `/api/games/${gameId}/call-number`,
+        {
+          method: "POST",
+        }
+      );
       // Response handling is via Pusher, no need to process here
     } catch (error) {
       console.error("Failed to call number:", error);
@@ -544,7 +555,10 @@ const isHost = session?.user?.id === game.hostId;
 useEffect(() => {
   if (isHost && gameStatus === "STARTED") {
     // Only host drives the number calling
-    intervalRef.current = setInterval(callNextNumber, numberInterval * 1000);
+    intervalRef.current = setInterval(
+      callNextNumber,
+      numberInterval * 1000
+    );
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
@@ -587,7 +601,8 @@ const useGameStore = create<GameState>((set) => ({
   setCalledNumbers: (numbers) =>
     set({
       calledNumbers: numbers,
-      currentNumber: numbers.length > 0 ? numbers[numbers.length - 1] : null,
+      currentNumber:
+        numbers.length > 0 ? numbers[numbers.length - 1] : null,
       gameSequence: numbers.length,
     }),
 

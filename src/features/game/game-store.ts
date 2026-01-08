@@ -35,7 +35,7 @@ interface CurrentPlayer {
   };
 }
 
-interface GameStore {
+export interface GameStore {
   // State
   game: GameDetails | null;
   players: Player[];
@@ -79,6 +79,7 @@ interface GameStore {
   addClaimedPattern: (pattern: ClaimedPattern) => void;
   setClaimedPatterns: (patterns: ClaimedPattern[]) => void;
   resetClaimState: () => void;
+  toggleMark: (number: number) => void;
 }
 
 interface ClaimedPattern {
@@ -192,17 +193,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const token = state.currentPlayer?.token;
       if (!gameId || !token) return;
 
-      const response = await fetch(`/api/games/${gameId}/ticket/mark`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          number,
-          action: isMarked ? "UNMARK" : "MARK",
-        }),
-      });
+      const response = await fetch(
+        `/api/games/${gameId}/ticket/mark`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            number,
+            action: isMarked ? "UNMARK" : "MARK",
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to sync mark");
@@ -214,7 +218,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
   },
 
-  setMarkedNumbers: (numbers: number[]) => set({ markedNumbers: numbers }),
+  setMarkedNumbers: (numbers: number[]) =>
+    set({ markedNumbers: numbers }),
 
   // Claim Actions (Story 5.2)
   setIsClaiming: (isClaiming) => set({ isClaiming }),
