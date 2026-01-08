@@ -88,6 +88,12 @@ describe("GameList Component", () => {
       expect(screen.getByText("Test Game")).toBeDefined();
       expect(screen.getByText("CODE12")).toBeDefined();
       expect(screen.getByText("CONFIGURING")).toBeDefined();
+      const manageButton = screen.getByRole("link", {
+        name: /manage/i,
+      });
+      expect(manageButton.getAttribute("href")).toBe(
+        "/dashboard/game/1/config"
+      );
     });
   });
 });

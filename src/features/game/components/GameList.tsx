@@ -116,7 +116,7 @@ export function GameList() {
               </div>
             </div>
             <div className="mt-4 flex justify-end">
-              <Link href={`/dashboard/game/${game.id}`}>
+              <Link href={`/dashboard/game/${game.id}/config`}>
                 <Button variant="outline" size="sm">
                   Manage
                 </Button>
