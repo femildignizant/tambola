@@ -73,11 +73,14 @@ export function PlayPageClient({
     }
   }, [initialCalledNumbers, setCalledNumbers]);
 
+  const isCallingRef = useRef(false);
+
   // Call next number from the API
   const callNextNumber = useCallback(async () => {
-    if (isCallingNumber || isGameEnded) return;
+    if (isCallingRef.current || isGameEnded) return;
 
-    setIsCallingNumber(true);
+    isCallingRef.current = true;
+    setIsCallingNumber(true); // Keep for UI state if needed, but logic uses ref
     try {
       const response = await fetch(`/api/games/${gameId}/call-number`, {
         method: "POST",
@@ -91,9 +94,10 @@ export function PlayPageClient({
     } catch (err) {
       console.error("Failed to call number:", err);
     } finally {
+      isCallingRef.current = false;
       setIsCallingNumber(false);
     }
-  }, [gameId, isCallingNumber, isGameEnded]);
+  }, [gameId, isGameEnded]);
 
   // Subscribe to Pusher events
   useEffect(() => {
@@ -138,20 +142,30 @@ export function PlayPageClient({
         numberInterval * 1000
       );
 
-      // Call the first number immediately after a short delay
-      const initialDelay = setTimeout(() => {
-        callNextNumber();
-      }, 3000); // 3 second countdown before first number
+      // Only do the initial delay call if no numbers have been called yet (fresh game start)
+      // and we are just mounting.
+      if (calledNumbers.length === 0) {
+        const initialDelay = setTimeout(() => {
+          callNextNumber();
+        }, 3000); // 3 second countdown before first number
+        
+        return () => {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          clearTimeout(initialDelay);
+        };
+      }
 
       return () => {
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
-        clearTimeout(initialDelay);
       };
     }
-  }, [isHost, isGameEnded, loading, numberInterval, callNextNumber]);
+  }, [isHost, isGameEnded, loading, numberInterval, callNextNumber, calledNumbers.length]);
 
   // Fetch player data on mount
   useEffect(() => {
