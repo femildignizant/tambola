@@ -128,7 +128,9 @@ export function GameSettingsForm({
                             />
                           </FormControl>
                           <FormLabel className="font-normal">
-                            {interval === 7
+                            {interval === 2
+                              ? "⚡ Turbo (2s)"
+                              : interval === 7
                               ? "Fast (7s)"
                               : interval === 10
                               ? "Normal (10s)"

@@ -68,6 +68,7 @@ export const gameSettingsSchema = z
         z.literal(GAME_INTERVALS[0]),
         z.literal(GAME_INTERVALS[1]),
         z.literal(GAME_INTERVALS[2]),
+        z.literal(GAME_INTERVALS[3]),
       ])
       .refine((val) => GAME_INTERVALS.includes(val), {
         message: `Interval must be ${GAME_INTERVALS.join(

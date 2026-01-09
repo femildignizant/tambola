@@ -58,7 +58,7 @@ export default async function GameConfigPage(props: PageProps) {
   }
 
   const settingsValues = {
-    numberInterval: game.numberInterval as 7 | 10 | 15,
+    numberInterval: game.numberInterval as 2 | 7 | 10 | 15,
     minPlayers: game.minPlayers,
     maxPlayers: game.maxPlayers,
   };

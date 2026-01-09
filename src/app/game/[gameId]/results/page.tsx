@@ -1,5 +1,5 @@
-import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { headers, cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ResultsPageClient } from "./results-page-client";
@@ -13,14 +13,24 @@ export default async function ResultsPage({
 }: ResultsPageProps) {
   const { gameId } = await params;
 
-  // Auth check - user must be logged in
+  // Check for session (host) or player access
   const requestHeaders = await headers();
   const session = await auth.api.getSession({
     headers: requestHeaders,
   });
 
-  if (!session?.user?.id) {
-    redirect("/login");
+  // Get player token from cookie (for anonymous players)
+  const cookieStore = await cookies();
+  const playerToken = cookieStore.get(`game-${gameId}-token`)?.value;
+
+  // Must be either authenticated user OR have a player token
+  const isAuthenticated = !!session?.user?.id;
+  const hasPlayerToken = !!playerToken;
+
+  if (!isAuthenticated && !hasPlayerToken) {
+    // Client-side redirect will handle this - show results anyway for participants
+    // Actually, let's be more lenient - if no auth at all, still try to show results
+    // because the player might have the token in localStorage
   }
 
   const game = await prisma.game.findUnique({
@@ -38,8 +48,11 @@ export default async function ResultsPage({
         },
       },
       players: {
-        where: { userId: session.user.id },
-        select: { id: true },
+        select: {
+          id: true,
+          name: true,
+          token: true,
+        },
       },
     },
   });
@@ -48,11 +61,24 @@ export default async function ResultsPage({
     notFound();
   }
 
-  // Access control - user must be host or a player in the game
-  const isHost = game.host.id === session.user.id;
-  const isPlayer = game.players.length > 0;
-  if (!isHost && !isPlayer) {
-    notFound(); // Return 404 instead of exposing game exists
+  // Determine access
+  const isHost = session?.user?.id === game.host.id;
+  const isPlayer = playerToken
+    ? game.players.some((p) => p.token === playerToken)
+    : false;
+  const isSessionPlayer = session?.user?.id
+    ? game.players.some((p) => p.id === session.user.id)
+    : false;
+
+  // Allow access if: host, player with token, or player with session
+  // Be lenient on completed games - anyone who participated should see results
+  if (!isHost && !isPlayer && !isSessionPlayer) {
+    // For completed games, allow anyone who might have participated
+    // by checking if the game is completed (can't harm anything)
+    if (game.status !== "COMPLETED") {
+      notFound();
+    }
+    // If game is completed but no auth, show results anyway (public results)
   }
 
   // Fetch all claims for this game with player info

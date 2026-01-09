@@ -59,6 +59,11 @@ export default async function PlayPage(props: PageProps) {
     redirect(`/game/${gameId}`);
   }
 
+  // Redirect to results if game has already ended
+  if (game.status === "COMPLETED") {
+    redirect(`/game/${gameId}/results`);
+  }
+
   // Determine if current user is the host
   const isHost = session?.user?.id === game.hostId;
 

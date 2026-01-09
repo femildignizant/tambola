@@ -76,14 +76,14 @@ development_status:
   epic-4-retrospective: done
 
   # Epic 5
-  epic-5: in-progress
+  epic-5: done
   5-1-claim-verification-logic: done
   5-2-initiating-a-claim: done
   5-3-claim-result-announcement: done
   5-4-pattern-completion-leaderboard: done
   5-5-game-completion-full-house-force-stop: done
   5-6-ui-layout-consistency-navigation-patterns: done
-  epic-5-retrospective: optional
+  epic-5-retrospective: done
 
   # Epic 6
   epic-6: backlog
