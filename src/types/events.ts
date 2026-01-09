@@ -5,13 +5,23 @@ export interface NumberCalledEvent {
   remaining: number;
 }
 
+export type GameEndReason =
+  | "ALL_NUMBERS_CALLED"
+  | "FULL_HOUSE"
+  | "FORCE_STOP";
+
 export interface GameEndedEvent {
-  reason: "ALL_NUMBERS_CALLED" | "FULL_HOUSE_CLAIMED";
-  finalSequence: number;
+  reason: GameEndReason;
+  finalSequence?: number;
   completedAt: string;
+  winner?: {
+    playerId: string;
+    playerName: string;
+    points: number;
+  };
 }
 
-import { GameDetails } from "@/features/game/game-store";
+import type { GameDetails } from "@/features/game/game-store";
 
 export interface PlayPageClientProps {
   gameId: string;

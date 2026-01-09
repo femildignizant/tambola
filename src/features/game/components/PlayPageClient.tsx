@@ -12,7 +12,13 @@ import { ClaimModal } from "@/features/game/components/ClaimModal";
 import { Leaderboard } from "@/features/game/components/Leaderboard";
 import { PatternStatusList } from "@/features/game/components/PatternStatusList";
 import { pusherClient } from "@/lib/pusher-client";
-import { Loader2, Volume2, VolumeX, Trophy } from "lucide-react";
+import {
+  Loader2,
+  Volume2,
+  VolumeX,
+  Trophy,
+  StopCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   Alert,
@@ -26,6 +32,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import type {
   PlayPageClientProps,
@@ -75,6 +92,7 @@ export function PlayPageClient({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+  const [isEndingGame, setIsEndingGame] = useState(false);
 
   // Initialize with server state
   useEffect(() => {
@@ -128,6 +146,32 @@ export function PlayPageClient({
     [gameId, isGameEnded]
   );
 
+  // Host-only: End game early
+  const handleEndGame = useCallback(async () => {
+    if (!isHost || isEndingGame || isGameEnded) return;
+
+    setIsEndingGame(true);
+    try {
+      const response = await fetch(`/api/games/${gameId}/end`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to end game");
+        return;
+      }
+
+      toast.success("Game ended successfully");
+      // Navigation will be handled by Pusher event
+    } catch (err) {
+      console.error("Failed to end game:", err);
+      toast.error("Failed to end game");
+    } finally {
+      setIsEndingGame(false);
+    }
+  }, [gameId, isHost, isEndingGame, isGameEnded]);
+
   // Subscribe to Pusher events
   useEffect(() => {
     const channel = pusherClient.subscribe(`game-${gameId}`);
@@ -167,13 +211,44 @@ export function PlayPageClient({
       );
     });
 
-    channel.bind("game:ended", (_data: GameEndedEvent) => {
+    channel.bind("game:ended", (data: GameEndedEvent) => {
       setGameEnded();
 
       // Stop the polling interval
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
+      }
+
+      // Show appropriate toast message based on reason
+      if (data.reason === "FULL_HOUSE" && data.winner) {
+        toast(
+          <div className="flex flex-col gap-1">
+            <p className="font-bold text-lg">🎉 Game Over!</p>
+            <p className="text-sm">
+              {data.winner.playerName} won with Full House!
+            </p>
+            <p className="text-sm text-muted-foreground">
+              +{data.winner.points} points
+            </p>
+          </div>,
+          {
+            duration: 5000,
+            position: "top-center",
+          }
+        );
+      } else if (data.reason === "FORCE_STOP") {
+        toast.info("Game ended by host", {
+          description: "The host has ended the game.",
+          duration: 4000,
+          position: "top-center",
+        });
+      } else {
+        toast.info("Game completed", {
+          description: "All 90 numbers have been called!",
+          duration: 4000,
+          position: "top-center",
+        });
       }
 
       // Redirect to results page after short delay
@@ -392,6 +467,46 @@ export function PlayPageClient({
                   Claim Prize
                 </Button>
               )}
+
+              {/* Host-only: End Game button with confirmation */}
+              {isHost && !isGameEnded && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      variant="destructive"
+                      disabled={isEndingGame}
+                    >
+                      {isEndingGame ? (
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      ) : (
+                        <StopCircle className="h-5 w-5 mr-2" />
+                      )}
+                      {isEndingGame ? "Ending Game..." : "End Game"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        End Game Early?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will immediately end the game for all
+                        players. Winners will be determined based on
+                        current claims. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleEndGame}>
+                        End Game Now
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+
               <Alert>
                 <AlertTitle>Status</AlertTitle>
                 <AlertDescription>

@@ -81,8 +81,8 @@ development_status:
   5-2-initiating-a-claim: done
   5-3-claim-result-announcement: done
   5-4-pattern-completion-leaderboard: done
-  5-5-game-completion-full-house-force-stop: ready-for-dev
-  5-6-ui-layout-consistency-navigation-patterns: review
+  5-5-game-completion-full-house-force-stop: done
+  5-6-ui-layout-consistency-navigation-patterns: done
   epic-5-retrospective: optional
 
   # Epic 6

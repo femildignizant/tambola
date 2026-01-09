@@ -219,6 +219,11 @@ export async function POST(
       },
     });
 
+    // Release the Redis lock after successful claim
+    if (lockKey) {
+      await redis.del(lockKey);
+    }
+
     // 7. PUSHER BROADCAST: Notify all players
     await pusherServer.trigger(`game-${gameId}`, "claim:accepted", {
       claim: {
@@ -232,7 +237,30 @@ export async function POST(
       },
     });
 
-    // 8. Return success response
+    // 8. FULL HOUSE: End game if this was a Full House claim (1st place)
+    if (pattern === ClaimPattern.FULL_HOUSE && acquiredRank === 1) {
+      // Update game status to COMPLETED
+      await prisma.game.update({
+        where: { id: gameId },
+        data: {
+          status: "COMPLETED",
+          completedAt: new Date(),
+        },
+      });
+
+      // Broadcast game:ended event
+      await pusherServer.trigger(`game-${gameId}`, "game:ended", {
+        reason: "FULL_HOUSE",
+        winner: {
+          playerId: claim.playerId,
+          playerName: player.name,
+          points: claim.points,
+        },
+        completedAt: new Date().toISOString(),
+      });
+    }
+
+    // 9. Return success response
     return NextResponse.json({
       data: {
         claim: {

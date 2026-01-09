@@ -1,6 +1,6 @@
 # Story 5.5: Game Completion (Full House & Force Stop)
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -34,51 +34,51 @@ so that **we can see the final winners**.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Trigger game:ended on Full House claim (AC: #1)
+- [x] Task 1: Trigger game:ended on Full House claim (AC: #1)
 
-  - [ ] Modify `src/app/api/games/[gameId]/claim/route.ts` POST handler
-  - [ ] After successful FULL_HOUSE claim, update game status to "COMPLETED"
-  - [ ] Broadcast `game:ended` event with `reason: "FULL_HOUSE"` and winner details
-  - [ ] Add `COMPLETED` as valid GameStatus enum value if not exists
+  - [x] Modify `src/app/api/games/[gameId]/claim/route.ts` POST handler
+  - [x] After successful FULL_HOUSE claim, update game status to "COMPLETED"
+  - [x] Broadcast `game:ended` event with `reason: "FULL_HOUSE"` and winner details
+  - [x] Add `COMPLETED` as valid GameStatus enum value if not exists
 
-- [ ] Task 2: Create Host Force Stop API Endpoint (AC: #2)
+- [x] Task 2: Create Host Force Stop API Endpoint (AC: #2)
 
-  - [ ] Create `src/app/api/games/[gameId]/end/route.ts`
-  - [ ] Implement POST handler with host authentication check
-  - [ ] Update game status to "COMPLETED"
-  - [ ] Broadcast `game:ended` event with `reason: "FORCE_STOP"`
-  - [ ] Return success response with final game state
+  - [x] Create `src/app/api/games/[gameId]/end/route.ts`
+  - [x] Implement POST handler with host authentication check
+  - [x] Update game status to "COMPLETED"
+  - [x] Broadcast `game:ended` event with `reason: "FORCE_STOP"`
+  - [x] Return success response with final game state
 
-- [ ] Task 3: Add Host "End Game" Button UI (AC: #2)
+- [x] Task 3: Add Host "End Game" Button UI (AC: #2)
 
-  - [ ] Add "End Game" button to host controls in `PlayPageClient.tsx`
-  - [ ] Only show for host when game is in "STARTED" status
-  - [ ] Add confirmation dialog before ending (prevent accidental clicks)
-  - [ ] Handle API call with loading state and error handling
-  - [ ] Navigate to results page on success
+  - [x] Add "End Game" button to host controls in `PlayPageClient.tsx`
+  - [x] Only show for host when game is in "STARTED" status
+  - [x] Add confirmation dialog before ending (prevent accidental clicks)
+  - [x] Handle API call with loading state and error handling
+  - [x] Navigate to results page on success
 
-- [ ] Task 4: Enhance game:ended Event Handler (AC: #1, #2, #3)
+- [x] Task 4: Enhance game:ended Event Handler (AC: #1, #2, #3)
 
-  - [ ] Update `game:ended` event type to include `reason: "FULL_HOUSE" | "FORCE_STOP" | "ALL_NUMBERS_CALLED"`
-  - [ ] Modify event handler in `PlayPageClient.tsx` to handle different reasons
-  - [ ] Show appropriate toast message based on reason
-  - [ ] Navigate to results page with optional delay for celebration
+  - [x] Update `game:ended` event type to include `reason: "FULL_HOUSE" | "FORCE_STOP" | "ALL_NUMBERS_CALLED"`
+  - [x] Modify event handler in `PlayPageClient.tsx` to handle different reasons
+  - [x] Show appropriate toast message based on reason
+  - [x] Navigate to results page with optional delay for celebration
 
-- [ ] Task 5: Create/Enhance Results Page (AC: #3)
+- [x] Task 5: Create/Enhance Results Page (AC: #3)
 
-  - [ ] Ensure `src/app/game/[gameId]/results/page.tsx` exists and works
-  - [ ] Display final leaderboard with all claimed patterns
-  - [ ] Show game completion reason ("Full House Winner: {name}" or "Game Ended by Host")
-  - [ ] Show all players with their final scores sorted by rank
-  - [ ] Add "Back to Dashboard" navigation for host
-  - [ ] Add "Play Again" or leave game option for players
+  - [x] Ensure `src/app/game/[gameId]/results/page.tsx` exists and works
+  - [x] Display final leaderboard with all claimed patterns
+  - [x] Show game completion reason ("Full House Winner: {name}" or "Game Ended by Host")
+  - [x] Show all players with their final scores sorted by rank
+  - [x] Add "Back to Dashboard" navigation for host
+  - [x] Add "Play Again" or leave game option for players
 
-- [ ] Task 6: Testing & Verification
-  - [ ] Test Full House claim triggers game end correctly
-  - [ ] Test host force stop works and broadcasts to all players
-  - [ ] Test results page displays correctly with all data
-  - [ ] Test navigation flow from play page to results page
-  - [ ] Verify game cannot be interacted with after completion
+- [x] Task 6: Testing & Verification
+  - [x] Test Full House claim triggers game end correctly
+  - [x] Test host force stop works and broadcasts to all players
+  - [x] Test results page displays correctly with all data
+  - [x] Test navigation flow from play page to results page
+  - [x] Verify game cannot be interacted with after completion
 
 ## Dev Notes
 
@@ -303,10 +303,47 @@ const isHost = game.hostId === currentUserId; // Need to track this
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude claude-sonnet-4-20250514
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+1. **Task 1**: Modified `claim/route.ts` to check for FULL_HOUSE pattern after successful claim. When 1st place Full House is claimed, game status updates to COMPLETED and `game:ended` event broadcasts with winner info.
+
+2. **Task 2**: Created new `end/route.ts` endpoint for Force Stop. Includes host authentication via session check, game status validation (must be STARTED), and broadcasts `game:ended` with reason "FORCE_STOP".
+
+3. **Task 3**: Added End Game button with AlertDialog confirmation in PlayPageClient. Uses `StopCircle` icon, destructive variant, loading state, and toast feedback. Only visible to hosts.
+
+4. **Task 4**: Extended `GameEndedEvent` type with `GameEndReason` union type and optional winner info. Enhanced event handler to display context-specific toast messages based on game end reason.
+
+5. **Task 5**: Created complete Results page with server component fetching claims data and client component displaying:
+   - Full House winner celebration banner
+   - Player standings with aggregated scores
+   - All claims list with pattern details
+   - Game statistics summary
+   - Navigation back to dashboard
+
+### Code Review Fixes Applied
+
+- **Redis lock release** - Added explicit `redis.del(lockKey)` after successful claim
+- **End Game button visibility** - Added `!isGameEnded` check to prevent button showing during COMPLETED state
+- **Results page access control** - Added session auth and host/player verification
+- **Play Again option** - Added "Join Another Game" button to results page
+- **Nullable hostName** - Added null fallback for host.name
+
 ### File List
+
+**New Files:**
+
+- `src/app/api/games/[gameId]/end/route.ts` - Force Stop API endpoint
+- `src/app/game/[gameId]/results/page.tsx` - Results page server component (with auth)
+- `src/app/game/[gameId]/results/results-page-client.tsx` - Results page client component
+
+**Modified Files:**
+
+- `src/app/api/games/[gameId]/claim/route.ts` - Full House game ending + Redis lock release
+- `src/types/events.ts` - Extended GameEndedEvent type with reason and winner
+- `src/features/game/components/PlayPageClient.tsx` - End Game button with proper visibility check
