@@ -10,6 +10,8 @@ import { useGameStore } from "@/features/game/game-store";
 import { pusherClient } from "@/lib/pusher-client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GameLayout } from "@/components/layouts/GameLayout";
+import { AlertTriangle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface GameData {
   id: string;
@@ -111,20 +113,36 @@ export function GameLobbyClient({
     }
   }, [gameData.id, setCurrentPlayer]);
 
+  // Handle STARTED game routing: redirect existing players to play page
+  useEffect(() => {
+    // Only act after token check is complete AND game is STARTED
+    if (
+      !isCheckingToken &&
+      gameData.status === "STARTED" &&
+      hasJoined
+    ) {
+      // Existing player with valid token - redirect to play page
+      router.push(`/game/${gameData.id}/play`);
+    }
+  }, [
+    isCheckingToken,
+    gameData.status,
+    gameData.id,
+    hasJoined,
+    router,
+  ]);
+
   // Subscribe to Pusher events (centralized subscription)
   useEffect(() => {
-    console.log(
-      `🔌 Subscribing to Pusher channel: game-${gameData.id}`
-    );
     const channel = pusherClient.subscribe(`game-${gameData.id}`);
 
     // Handle connection state
     pusherClient.connection.bind("connected", () => {
-      console.log("Pusher connected");
+      // Connected to Pusher
     });
 
-    pusherClient.connection.bind("error", (err: Error) => {
-      console.error("Pusher connection error:", err);
+    pusherClient.connection.bind("error", () => {
+      // Pusher connection error - silent fail
     });
 
     // Listen for game:started event
@@ -134,13 +152,11 @@ export function GameLobbyClient({
 
     // Listen for game:updated event
     channel.bind("game:updated", (data: { data: GameData }) => {
-      console.log("🎮 Client received game:updated event:", data);
       setGame(data.data);
     });
 
     // Listen for player:joined event
     channel.bind("player:joined", (data: { player: Player }) => {
-      console.log("👤 Client received player:joined event:", data);
       addPlayer(data.player);
     });
 
@@ -174,6 +190,40 @@ export function GameLobbyClient({
   };
 
   const activeGame = game || gameData;
+  const isGameStarted = activeGame.status === "STARTED";
+
+  // Show "Game in Progress" UI for non-players when game has started
+  if (!isCheckingToken && isGameStarted && !hasJoined) {
+    return (
+      <GameLayout
+        gameId={activeGame.id}
+        gameCode={activeGame.gameCode}
+        showLeaveButton={false}
+      >
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Card className="max-w-md w-full text-center">
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex justify-center">
+                <AlertTriangle className="h-12 w-12 text-amber-500" />
+              </div>
+              <h2 className="text-xl font-semibold">
+                Game in Progress
+              </h2>
+              <p className="text-muted-foreground">
+                This game has already started. New players cannot
+                join.
+              </p>
+              <p className="text-sm text-muted-foreground mt-4">
+                If you were already in this game, please try
+                refreshing the page or joining from the same browser
+                you used before.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </GameLayout>
+    );
+  }
 
   return (
     <GameLayout

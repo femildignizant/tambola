@@ -175,6 +175,35 @@ describe("POST /api/games/[gameId]/join", () => {
     expect(data.error).toBe("Game has already ended");
   });
 
+  it("should return 400 if game has already started", async () => {
+    vi.mocked(prisma.game.findUnique).mockResolvedValue({
+      id: gameId,
+      title: "Test Game",
+      hostId: "host-123",
+      status: "STARTED",
+      gameCode: "ABC123",
+      numberInterval: 10,
+      minPlayers: 2,
+      maxPlayers: 10,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      calledNumbers: [1, 2, 3],
+      players: [{ id: "p-1" } as Player],
+    } as Game & { players: Player[] });
+
+    const req = new NextRequest("http://localhost/api/join", {
+      method: "POST",
+      body: JSON.stringify({ name: "NewPlayer" }),
+    });
+
+    const res = await POST(req, { params });
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBe(
+      "Game has already started. You cannot join now."
+    );
+  });
+
   it("should allow duplicate names but return different player IDs (Idempotency check)", async () => {
     vi.mocked(prisma.game.findUnique).mockResolvedValue({
       id: gameId,

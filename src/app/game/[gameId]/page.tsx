@@ -52,10 +52,10 @@ export default async function GameLobbyPage({ params }: PageProps) {
   }
 
   // Handle game state routing
-  if (game.status === "STARTED") {
-    // Redirect to play page when game has started
-    redirect(`/game/${gameId}/play`);
-  }
+  // NOTE: For STARTED games, we let the client component handle routing
+  // because it needs to check localStorage for existing player tokens.
+  // - Existing players (with valid token) are redirected to /play
+  // - New users see "Game in progress" UI with disabled join form
 
   if (game.status === "COMPLETED") {
     // Redirect to results page when game is completed
