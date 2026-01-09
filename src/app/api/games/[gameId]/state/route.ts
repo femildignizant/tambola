@@ -110,24 +110,26 @@ export async function GET(
           id: true,
           name: true,
           token: true,
-          ticket: {
+          tickets: {
             select: {
               id: true,
               grid: true,
               markedNumbers: true,
             },
+            take: 1, // Get only the first ticket (players have one ticket per game)
           },
         },
       });
 
-      if (player?.ticket) {
+      const ticket = player?.tickets?.[0];
+      if (player && ticket) {
         playerData = {
           id: player.id,
           name: player.name,
           ticket: {
-            id: player.ticket.id,
-            grid: player.ticket.grid,
-            markedNumbers: player.ticket.markedNumbers || [],
+            id: ticket.id,
+            grid: ticket.grid,
+            markedNumbers: ticket.markedNumbers || [],
           },
         };
       }
