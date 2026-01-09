@@ -6,9 +6,11 @@ import { useGameStore } from "@/features/game/game-store";
 import { Ticket } from "@/features/game/components/Ticket";
 import { NumberDisplay } from "@/features/game/components/NumberDisplay";
 import { NumberHistory } from "@/features/game/components/NumberHistory";
+import { AllNumbersGrid } from "@/features/game/components/AllNumbersGrid";
 import { useNumberAnnouncer } from "@/features/game/hooks/useNumberAnnouncer";
 import { ClaimModal } from "@/features/game/components/ClaimModal";
 import { Leaderboard } from "@/features/game/components/Leaderboard";
+import { PatternStatusList } from "@/features/game/components/PatternStatusList";
 import { pusherClient } from "@/lib/pusher-client";
 import { Loader2, Volume2, VolumeX, Trophy } from "lucide-react";
 import { toast } from "sonner";
@@ -72,7 +74,6 @@ export function PlayPageClient({
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isCallingNumber, setIsCallingNumber] = useState(false);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
 
   // Initialize with server state
@@ -94,7 +95,6 @@ export function PlayPageClient({
       if (isCallingRef.current || isGameEnded) return;
 
       isCallingRef.current = true;
-      setIsCallingNumber(true);
       try {
         const response = await fetch(
           `/api/games/${gameId}/call-number`,
@@ -123,7 +123,6 @@ export function PlayPageClient({
         console.error("Failed to call number:", err);
       } finally {
         isCallingRef.current = false;
-        setIsCallingNumber(false);
       }
     },
     [gameId, isGameEnded]
@@ -168,7 +167,7 @@ export function PlayPageClient({
       );
     });
 
-    channel.bind("game:ended", (data: GameEndedEvent) => {
+    channel.bind("game:ended", (_data: GameEndedEvent) => {
       setGameEnded();
 
       // Stop the polling interval
@@ -317,9 +316,11 @@ export function PlayPageClient({
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-6">
-          {currentPlayer?.ticket && (
+          {/* Only show ticket to players, not hosts */}
+          {!isHost && currentPlayer?.ticket && (
             <Ticket grid={currentPlayer.ticket.grid} />
           )}
+          <PatternStatusList />
           <Leaderboard />
         </div>
 
@@ -352,13 +353,19 @@ export function PlayPageClient({
             </CardContent>
           </Card>
 
-          {/* Called Numbers History */}
+          {/* Called Numbers History - Hosts see all, players see last 10 */}
           <Card>
             <CardHeader>
-              <CardTitle>Last 10 Numbers</CardTitle>
+              <CardTitle>
+                {isHost ? "All Called Numbers" : "Last 10 Numbers"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <NumberHistory calledNumbers={calledNumbers} />
+              {isHost ? (
+                <AllNumbersGrid calledNumbers={calledNumbers} />
+              ) : (
+                <NumberHistory calledNumbers={calledNumbers} />
+              )}
             </CardContent>
           </Card>
 
@@ -373,15 +380,18 @@ export function PlayPageClient({
             </Alert>
           ) : (
             <div className="space-y-4">
-              <Button
-                onClick={() => setIsClaimModalOpen(true)}
-                className="w-full"
-                size="lg"
-                variant="default"
-              >
-                <Trophy className="h-5 w-5 mr-2" />
-                Claim Prize
-              </Button>
+              {/* Only show claim button to players, not hosts */}
+              {!isHost && (
+                <Button
+                  onClick={() => setIsClaimModalOpen(true)}
+                  className="w-full"
+                  size="lg"
+                  variant="default"
+                >
+                  <Trophy className="h-5 w-5 mr-2" />
+                  Claim Prize
+                </Button>
+              )}
               <Alert>
                 <AlertTitle>Status</AlertTitle>
                 <AlertDescription>

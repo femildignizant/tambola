@@ -114,11 +114,50 @@ export async function POST(
       ? 2
       : 1;
 
-    // Try to acquire lock for each rank slot until we find one or all are taken
+    // IMPORTANT: Query existing claims FIRST to know which ranks are already taken in DB
+    // This prevents the race condition where Redis locks expire but claims exist in DB
+    const existingClaims = await prisma.claim.findMany({
+      where: {
+        gameId,
+        pattern: CLAIM_PATTERN_TO_DB_PATTERN[pattern],
+      },
+      select: { playerId: true, rank: true },
+    });
+
+    // Check if this player already claimed this pattern
+    const playerAlreadyClaimed = existingClaims.some(
+      (c) => c.playerId === playerId
+    );
+    if (playerAlreadyClaimed) {
+      return NextResponse.json(
+        { error: "You have already claimed this pattern" },
+        { status: 400 }
+      );
+    }
+
+    // Get ranks already claimed in DB
+    const claimedRanksInDb = new Set(
+      existingClaims.map((c) => c.rank)
+    );
+
+    // Check if all ranks are already claimed
+    if (claimedRanksInDb.size >= maxRank) {
+      return NextResponse.json(
+        { error: "All winners have been claimed for this pattern" },
+        { status: 400 }
+      );
+    }
+
+    // Try to acquire lock ONLY for ranks not already claimed in DB
     let acquiredRank: number | null = null;
     let lockKey: string | null = null;
 
     for (let rankToTry = 1; rankToTry <= maxRank; rankToTry++) {
+      // Skip ranks already claimed in DB
+      if (claimedRanksInDb.has(rankToTry)) {
+        continue;
+      }
+
       const tryLockKey = `claim:${gameId}:${pattern}:${rankToTry}`;
       // Use SET with NX and EX for atomic lock with TTL
       const lockResult = await redis.set(tryLockKey, playerId, {
@@ -134,40 +173,27 @@ export async function POST(
     }
 
     if (acquiredRank === null || lockKey === null) {
-      // All ranks are taken
+      // All unclaimed ranks are currently locked by other players
       return NextResponse.json(
-        { error: "All winners have been claimed for this pattern" },
-        { status: 400 }
+        {
+          error:
+            "Another player is currently claiming. Please try again.",
+        },
+        { status: 409 }
       );
     }
 
-    // Check if this player already claimed this pattern (after acquiring lock)
-    const existingClaims = await prisma.claim.findMany({
+    // Double-check the rank wasn't claimed while we were acquiring the lock (belt and suspenders)
+    const freshClaimCheck = await prisma.claim.findFirst({
       where: {
         gameId,
         pattern: CLAIM_PATTERN_TO_DB_PATTERN[pattern],
+        rank: acquiredRank,
       },
-      select: { playerId: true, rank: true },
     });
 
-    const playerAlreadyClaimed = existingClaims.some(
-      (c) => c.playerId === playerId
-    );
-    if (playerAlreadyClaimed) {
-      // Release lock since we won't use it
-      await redis.del(lockKey);
-      return NextResponse.json(
-        { error: "You have already claimed this pattern" },
-        { status: 400 }
-      );
-    }
-
-    // Verify this rank wasn't already claimed in DB (belt and suspenders)
-    const rankAlreadyClaimed = existingClaims.some(
-      (c) => c.rank === acquiredRank
-    );
-    if (rankAlreadyClaimed) {
-      // Release lock since rank is already taken in DB
+    if (freshClaimCheck) {
+      // Release lock since rank was just claimed
       await redis.del(lockKey);
       return NextResponse.json(
         { error: "This prize was just claimed by another player" },
