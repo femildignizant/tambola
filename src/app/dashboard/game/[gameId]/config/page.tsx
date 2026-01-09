@@ -4,8 +4,9 @@ import { PatternConfigForm } from "@/features/game/components/PatternConfigForm"
 import { GameSettingsForm } from "@/features/game/components/GameSettingsForm";
 import { InviteGame } from "@/features/game/components/InviteGame";
 import { HostStartButton } from "@/features/game/components/HostStartButton";
+import { HostLayout } from "@/components/layouts/HostLayout";
+import { PageHeader } from "@/components/layouts/PageHeader";
 import { headers } from "next/headers";
-
 import { redirect, notFound } from "next/navigation";
 
 interface PageProps {
@@ -43,14 +44,16 @@ export default async function GameConfigPage(props: PageProps) {
 
   if (game.hostId !== session.user.id) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
-        <h1 className="text-2xl font-bold text-destructive">
-          Access Denied
-        </h1>
-        <p className="text-muted-foreground">
-          You are not the host of this game.
-        </p>
-      </div>
+      <HostLayout showBackToDashboard>
+        <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
+          <h1 className="text-2xl font-bold text-destructive">
+            Access Denied
+          </h1>
+          <p className="text-muted-foreground">
+            You are not the host of this game.
+          </p>
+        </div>
+      </HostLayout>
     );
   }
 
@@ -61,18 +64,18 @@ export default async function GameConfigPage(props: PageProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Game Configuration
-        </h1>
-        <p className="text-muted-foreground">
-          Configure settings and winning patterns for{" "}
-          <span className="font-semibold text-foreground">
-            {game.title}
-          </span>
-        </p>
-      </div>
+    <HostLayout showBackToDashboard>
+      <PageHeader
+        title="Game Configuration"
+        subtitle={
+          <>
+            Configure settings and winning patterns for{" "}
+            <span className="font-semibold text-foreground">
+              {game.title}
+            </span>
+          </>
+        }
+      />
 
       <div className="grid gap-6">
         <div className="flex flex-col gap-6 p-6 border rounded-lg bg-card text-card-foreground shadow-sm">
@@ -99,6 +102,6 @@ export default async function GameConfigPage(props: PageProps) {
           initialPatterns={game.patterns}
         />
       </div>
-    </div>
+    </HostLayout>
   );
 }

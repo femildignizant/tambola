@@ -20,8 +20,6 @@ interface Pattern {
 }
 
 interface GameInfoProps {
-  title: string;
-  hostName: string;
   gameCode: string;
   numberInterval: number;
   minPlayers: number;
@@ -31,8 +29,6 @@ interface GameInfoProps {
 }
 
 export function GameInfo({
-  title,
-  hostName,
   gameCode,
   numberInterval,
   minPlayers,
@@ -81,14 +77,6 @@ export function GameInfo({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Game Title */}
-        <div>
-          <h3 className="text-2xl font-bold">{title}</h3>
-          <p className="text-sm text-muted-foreground">
-            Hosted by {hostName}
-          </p>
-        </div>
-
         {/* Game Code */}
         <div className="space-y-2">
           <p className="text-sm font-medium">Game Code</p>

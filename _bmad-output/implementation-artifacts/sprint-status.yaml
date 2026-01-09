@@ -82,6 +82,7 @@ development_status:
   5-3-claim-result-announcement: backlog
   5-4-pattern-completion-leaderboard: backlog
   5-5-game-completion-full-house-force-stop: backlog
+  5-6-ui-layout-consistency-navigation-patterns: review
   epic-5-retrospective: optional
 
   # Epic 6

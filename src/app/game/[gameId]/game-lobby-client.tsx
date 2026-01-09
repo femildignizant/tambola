@@ -10,6 +10,7 @@ import { useGameStore } from "@/features/game/game-store";
 import { pusherClient } from "@/lib/pusher-client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
+import { GameLayout } from "@/components/layouts/GameLayout";
 
 interface GameData {
   id: string;
@@ -59,20 +60,6 @@ export function GameLobbyClient({
   // Initialize game data and players in store
   useEffect(() => {
     setGame(gameData);
-    // Only set initial players if the store is empty to avoid overwriting real-time updates
-    // or better: just set them initially.
-    // Actually, purely setting them here is safe because this component mounts once.
-    // However, we should be careful not to overwrite if we re-render with same props but have new store data?
-    // Since initialPlayers prop comes from server page, it's static for this client instance until refresh.
-    // We should probably only set it once on mount.
-    // But React Strict Mode might run this twice.
-    // Let's use a ref or check if we already have players?
-    // Actually, setPlayers(initialPlayers) on mount is fine as long as it happens BEFORE we join.
-    // This effect runs on mount. When user joins, state updates.
-    // If this effect re-runs, it might be an issue.
-    // It depends on gameData/setGame dependencies.
-    // Let's make a separate effect for players to be safe and only run it once or when initialPlayers changes deeply?
-    // Actually, simplest is just to set it here.
     useGameStore.getState().setPlayers(initialPlayers);
   }, [gameData, setGame, initialPlayers]);
 
@@ -135,7 +122,6 @@ export function GameLobbyClient({
 
     pusherClient.connection.bind("error", (err: Error) => {
       console.error("Pusher connection error:", err);
-      // Could set an error state here to show connection issues to user
     });
 
     // Listen for game:started event
@@ -149,7 +135,7 @@ export function GameLobbyClient({
       setGame(data.data);
     });
 
-    // Listen for player:joined event (centralized here instead of LobbyPlayerList)
+    // Listen for player:joined event
     channel.bind("player:joined", (data: { player: Player }) => {
       addPlayer(data.player);
     });
@@ -175,7 +161,6 @@ export function GameLobbyClient({
       token: data.token,
       ticket: data.ticket,
     });
-    // Add self to the players list immediately
     addPlayer({
       id: data.player.id,
       name: data.player.name,
@@ -195,16 +180,16 @@ export function GameLobbyClient({
     );
   }
 
-  // Use the reactive game state from store for rendering, falling back to initial data if needed
   const activeGame = game || gameData;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Game Info Section */}
+    <GameLayout
+      gameId={activeGame.id}
+      gameCode={activeGame.gameCode}
+      showLeaveButton={hasJoined}
+    >
+      <div className="space-y-6">
         <GameInfo
-          title={activeGame.title}
-          hostName={activeGame.hostName}
           gameCode={activeGame.gameCode}
           numberInterval={activeGame.numberInterval}
           minPlayers={activeGame.minPlayers}
@@ -213,7 +198,6 @@ export function GameLobbyClient({
           gameId={activeGame.id}
         />
 
-        {/* Join Form or Lobby Content */}
         {!hasJoined ? (
           <div className="flex justify-center">
             <PlayerJoinForm
@@ -223,7 +207,6 @@ export function GameLobbyClient({
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Left Column: Ticket Display */}
             {currentPlayer?.ticket && (
               <TicketDisplay
                 grid={currentPlayer.ticket.grid}
@@ -231,7 +214,6 @@ export function GameLobbyClient({
               />
             )}
 
-            {/* Right Column: Player List */}
             <LobbyPlayerList
               maxPlayers={activeGame.maxPlayers}
               currentPlayerId={currentPlayer?.id}
@@ -239,7 +221,6 @@ export function GameLobbyClient({
           </div>
         )}
 
-        {/* Waiting Message */}
         {hasJoined && (
           <Alert>
             <AlertDescription className="text-center">
@@ -248,6 +229,6 @@ export function GameLobbyClient({
           </Alert>
         )}
       </div>
-    </div>
+    </GameLayout>
   );
 }

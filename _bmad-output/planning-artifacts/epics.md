@@ -865,6 +865,54 @@ So that **we can see the final winners**.
 
 ---
 
+### Story 5.6: UI Layout Consistency & Navigation Patterns
+
+As a **user** (both host and player),
+I want **consistent layouts, navigation patterns, and visual hierarchy across all pages**,
+So that **the application feels cohesive and I can navigate intuitively**.
+
+**Acceptance Criteria:**
+
+**Given** I navigate between different pages (Dashboard, Lobby, Game Play)
+**When** I view any page
+**Then** I see a consistent header structure with logo and contextual information
+**And** page titles follow the same typography and positioning
+**And** content areas use consistent max-width containers and spacing
+
+**Given** I am on a host page (Dashboard, Game Configuration, Host Controls)
+**When** I view the page
+**Then** I see a HostLayout with consistent navigation elements
+**And** I have access to "Back to Dashboard" navigation where appropriate
+**And** critical actions (Create Game, Start Game, End Game) use consistent button styling
+
+**Given** I am on a player page (Lobby, Game Play)
+**When** I view the page
+**Then** I see a PlayerLayout with consistent structure
+**And** the game code is always visible in the header
+**And** I have access to "Leave Game" functionality in a consistent location
+
+**Given** I am viewing any game-related page
+**When** the page loads
+**Then** I see consistent card/container styling with uniform padding and borders
+**And** section headers use the same typography hierarchy (h1, h2, h3)
+**And** spacing between sections follows a consistent scale (using design tokens)
+
+**Given** I interact with navigation elements
+**When** I click back buttons, breadcrumbs, or navigation links
+**Then** they behave predictably and maintain visual consistency
+**And** the current page/context is always clear from the UI
+
+**Technical Implementation Notes:**
+
+- Create layout components: `BaseLayout.tsx`, `HostLayout.tsx`, `PlayerLayout.tsx`, `GameLayout.tsx`
+- Create navigation components: `AppHeader.tsx`, `GameCodeDisplay.tsx`, `BackButton.tsx`
+- Create page wrapper components: `PageHeader.tsx`, `PageContent.tsx`
+- Refactor existing pages to use new layout system
+- Ensure design tokens from `globals.css` are consistently applied
+- Maintain responsive behavior across all layouts
+
+---
+
 ## Epic 6: Resilience & Game History — Stories
 
 ### Story 6.1: Reconnection & Mid-Game Recovery

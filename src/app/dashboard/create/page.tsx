@@ -1,19 +1,17 @@
 import { CreateGameForm } from "@/features/game/components/CreateGameForm";
+import { HostLayout } from "@/components/layouts/HostLayout";
+import { PageHeader } from "@/components/layouts/PageHeader";
 
 export default function CreateGamePage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] py-8 px-4">
-      <div className="w-full max-w-lg space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Setup Your Game
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Start hosting your Tambola game in minutes.
-          </p>
-        </div>
+    <HostLayout showBackToDashboard maxWidth="lg">
+      <div className="space-y-8">
+        <PageHeader
+          title="Setup Your Game"
+          subtitle="Start hosting your Tambola game in minutes."
+        />
         <CreateGameForm />
       </div>
-    </div>
+    </HostLayout>
   );
 }
