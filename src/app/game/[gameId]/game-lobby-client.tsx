@@ -9,7 +9,6 @@ import { GameInfo } from "@/features/game/components/GameInfo";
 import { useGameStore } from "@/features/game/game-store";
 import { pusherClient } from "@/lib/pusher-client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
 import { GameLayout } from "@/components/layouts/GameLayout";
 
 interface GameData {
@@ -55,6 +54,7 @@ export function GameLobbyClient({
     addPlayer,
   } = useGameStore();
   const [hasJoined, setHasJoined] = useState(false);
+  // Always start with true to match server-rendered HTML and avoid hydration mismatch
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   // Initialize game data and players in store
@@ -64,6 +64,7 @@ export function GameLobbyClient({
   }, [gameData, setGame, initialPlayers]);
 
   // Check if player has already joined (token in localStorage)
+  // This runs after hydration so it's safe to access localStorage
   useEffect(() => {
     const fetchPlayerData = async (token: string) => {
       try {
@@ -100,11 +101,13 @@ export function GameLobbyClient({
       }
     };
 
+    // Check localStorage after mount (client-side only)
     const token = localStorage.getItem(`game-${gameData.id}-token`);
     if (token) {
       fetchPlayerData(token);
     } else {
-      setIsCheckingToken(false);
+      // No token exists, stop checking - use queueMicrotask to avoid sync setState in effect
+      queueMicrotask(() => setIsCheckingToken(false));
     }
   }, [gameData.id, setCurrentPlayer]);
 
@@ -137,6 +140,7 @@ export function GameLobbyClient({
 
     // Listen for player:joined event
     channel.bind("player:joined", (data: { player: Player }) => {
+      console.log("👤 Client received player:joined event:", data);
       addPlayer(data.player);
     });
 
@@ -169,17 +173,6 @@ export function GameLobbyClient({
     setHasJoined(true);
   };
 
-  if (isCheckingToken) {
-    return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <p>Loading game...</p>
-        </div>
-      </div>
-    );
-  }
-
   const activeGame = game || gameData;
 
   return (
@@ -188,47 +181,53 @@ export function GameLobbyClient({
       gameCode={activeGame.gameCode}
       showLeaveButton={hasJoined}
     >
-      <div className="space-y-6">
-        <GameInfo
-          gameCode={activeGame.gameCode}
-          numberInterval={activeGame.numberInterval}
-          minPlayers={activeGame.minPlayers}
-          maxPlayers={activeGame.maxPlayers}
-          patterns={activeGame.patterns}
-          gameId={activeGame.id}
-        />
+      {isCheckingToken ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">Loading game...</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <GameInfo
+            gameCode={activeGame.gameCode}
+            numberInterval={activeGame.numberInterval}
+            minPlayers={activeGame.minPlayers}
+            maxPlayers={activeGame.maxPlayers}
+            patterns={activeGame.patterns}
+            gameId={activeGame.id}
+          />
 
-        {!hasJoined ? (
-          <div className="flex justify-center">
-            <PlayerJoinForm
-              gameId={activeGame.id}
-              onJoinSuccess={handleJoinSuccess}
-            />
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-6">
-            {currentPlayer?.ticket && (
-              <TicketDisplay
-                grid={currentPlayer.ticket.grid}
-                playerName={currentPlayer.name}
+          {!hasJoined ? (
+            <div className="flex justify-center">
+              <PlayerJoinForm
+                gameId={activeGame.id}
+                onJoinSuccess={handleJoinSuccess}
               />
-            )}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {currentPlayer?.ticket && (
+                <TicketDisplay
+                  grid={currentPlayer.ticket.grid}
+                  playerName={currentPlayer.name}
+                />
+              )}
 
-            <LobbyPlayerList
-              maxPlayers={activeGame.maxPlayers}
-              currentPlayerId={currentPlayer?.id}
-            />
-          </div>
-        )}
+              <LobbyPlayerList
+                maxPlayers={activeGame.maxPlayers}
+                currentPlayerId={currentPlayer?.id}
+              />
+            </div>
+          )}
 
-        {hasJoined && (
-          <Alert>
-            <AlertDescription className="text-center">
-              Waiting for host to start the game...
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
+          {hasJoined && (
+            <Alert>
+              <AlertDescription className="text-center">
+                Waiting for host to start the game...
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      )}
     </GameLayout>
   );
 }
