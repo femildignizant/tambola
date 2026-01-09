@@ -54,14 +54,21 @@ export function ClaimModal({
   // Check if a pattern is already fully claimed
   const getPatternStatus = useCallback(
     (pattern: ClaimPattern) => {
+      const dbPattern = CLAIM_PATTERN_TO_DB_PATTERN[pattern];
       const patternClaims = claimedPatterns.filter(
-        (c) => c.pattern === pattern
+        (c) => c.pattern === pattern || c.pattern === dbPattern
       );
       const gamePattern = game?.patterns.find(
-        (p) => p.pattern === pattern
+        (p) => p.pattern === dbPattern
       );
+      // If pattern not configured in game, it's not available (but NOT "fully claimed")
       if (!gamePattern)
-        return { claimed: true, maxReached: true, count: 0 };
+        return {
+          claimed: false,
+          maxReached: false,
+          count: 0,
+          unavailable: true,
+        };
 
       const maxRank = gamePattern.points3rd
         ? 3

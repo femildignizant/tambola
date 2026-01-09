@@ -47,6 +47,7 @@ export function PlayPageClient({
   numberInterval = 10,
   initialCalledNumbers = [],
   isHost = false,
+  gameData,
 }: PlayPageClientProps) {
   const router = useRouter();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,6 +62,7 @@ export function PlayPageClient({
     setCalledNumbers,
     setGameEnded,
     setMarkedNumbers,
+    setGame,
   } = useGameStore();
 
   const { isMuted, toggleMute, announceNumber } =
@@ -73,10 +75,13 @@ export function PlayPageClient({
 
   // Initialize with server state
   useEffect(() => {
+    if (gameData) {
+      setGame(gameData);
+    }
     if (initialCalledNumbers.length > 0) {
       setCalledNumbers(initialCalledNumbers);
     }
-  }, [initialCalledNumbers, setCalledNumbers]);
+  }, [initialCalledNumbers, setCalledNumbers, gameData, setGame]);
 
   const isCallingRef = useRef(false);
 

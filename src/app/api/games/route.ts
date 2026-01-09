@@ -67,6 +67,16 @@ export async function POST(req: Request) {
         hostId: session.user.id,
         gameCode,
         // Defaults for minPlayers, maxPlayers, numberInterval, status are handled by Prisma schema
+        // Create default FULL_HOUSE pattern - it's mandatory and cannot be disabled
+        patterns: {
+          create: {
+            pattern: "FULL_HOUSE",
+            enabled: true,
+            points1st: 100,
+            points2nd: null,
+            points3rd: null,
+          },
+        },
       },
     });
 

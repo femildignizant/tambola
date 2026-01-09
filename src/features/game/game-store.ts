@@ -6,7 +6,7 @@ interface Player {
   joinedAt: string;
 }
 
-interface GameDetails {
+export interface GameDetails {
   id: string;
   title: string;
   hostId: string;
