@@ -1,16 +1,16 @@
-import { GameList } from "@/features/game/components/GameList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { HostLayout } from "@/components/layouts/HostLayout";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { DashboardTabs } from "@/features/game/components/DashboardTabs";
 
 export default function DashboardPage() {
   return (
     <HostLayout>
       <PageHeader
-        title="Your Games"
-        subtitle="Manage your game sessions here."
+        title="Dashboard"
+        subtitle="Manage your games and view your history."
         actions={
           <Link href="/dashboard/create">
             <Button>
@@ -19,7 +19,7 @@ export default function DashboardPage() {
           </Link>
         }
       />
-      <GameList />
+      <DashboardTabs />
     </HostLayout>
   );
 }
