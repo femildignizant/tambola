@@ -8,8 +8,10 @@ import { NumberDisplay } from "@/features/game/components/NumberDisplay";
 import { NumberHistory } from "@/features/game/components/NumberHistory";
 import { useNumberAnnouncer } from "@/features/game/hooks/useNumberAnnouncer";
 import { ClaimModal } from "@/features/game/components/ClaimModal";
+import { Leaderboard } from "@/features/game/components/Leaderboard";
 import { pusherClient } from "@/lib/pusher-client";
 import { Loader2, Volume2, VolumeX, Trophy } from "lucide-react";
+import { toast } from "sonner";
 import {
   Alert,
   AlertDescription,
@@ -55,11 +57,11 @@ export function PlayPageClient({
     currentPlayer,
     setCurrentPlayer,
     calledNumbers,
-    currentNumber,
-    gameSequence,
     isGameEnded,
     addCalledNumber,
     setCalledNumbers,
+    currentNumber,
+    gameSequence,
     setGameEnded,
     setMarkedNumbers,
     setGame,
@@ -85,32 +87,47 @@ export function PlayPageClient({
 
   const isCallingRef = useRef(false);
 
-  // Call next number from the API
-  const callNextNumber = useCallback(async () => {
-    if (isCallingRef.current || isGameEnded) return;
+  // Call next number from the API with retry for race conditions
+  const callNextNumber = useCallback(
+    async (retryCount = 0) => {
+      const MAX_RETRIES = 3;
+      if (isCallingRef.current || isGameEnded) return;
 
-    isCallingRef.current = true;
-    setIsCallingNumber(true); // Keep for UI state if needed, but logic uses ref
-    try {
-      const response = await fetch(
-        `/api/games/${gameId}/call-number`,
-        {
-          method: "POST",
+      isCallingRef.current = true;
+      setIsCallingNumber(true);
+      try {
+        const response = await fetch(
+          `/api/games/${gameId}/call-number`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (response.status === 409 && retryCount < MAX_RETRIES) {
+          // Race condition detected - retry after small delay
+          isCallingRef.current = false;
+          const delay = Math.min(100 * Math.pow(2, retryCount), 1000);
+          setTimeout(() => callNextNumber(retryCount + 1), delay);
+          return;
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Failed to call number:", errorData.error);
+        if (!response.ok) {
+          const errorData = await response.json();
+          // Only log non-race-condition errors
+          if (response.status !== 409) {
+            console.error("Failed to call number:", errorData.error);
+          }
+        }
+        // Response handling is via Pusher, no need to process here
+      } catch (err) {
+        console.error("Failed to call number:", err);
+      } finally {
+        isCallingRef.current = false;
+        setIsCallingNumber(false);
       }
-      // Response handling is via Pusher, no need to process here
-    } catch (err) {
-      console.error("Failed to call number:", err);
-    } finally {
-      isCallingRef.current = false;
-      setIsCallingNumber(false);
-    }
-  }, [gameId, isGameEnded]);
+    },
+    [gameId, isGameEnded]
+  );
 
   // Subscribe to Pusher events
   useEffect(() => {
@@ -131,6 +148,24 @@ export function PlayPageClient({
         playerName: data.claim.playerName,
         claimedAt: data.claim.claimedAt,
       });
+
+      // Show global announcement
+      toast(
+        <div className="flex flex-col gap-1">
+          <p className="font-bold">
+            {data.claim.playerName} claimed{" "}
+            {data.claim.pattern.replace(/_/g, " ")}!
+          </p>
+          <p className="text-sm text-muted-foreground">
+            +{data.claim.points} points (Rank #{data.claim.rank})
+          </p>
+        </div>,
+        {
+          duration: 5000,
+          position: "top-center",
+          icon: <Trophy className="h-5 w-5 text-yellow-500" />,
+        }
+      );
     });
 
     channel.bind("game:ended", (data: GameEndedEvent) => {
@@ -281,10 +316,11 @@ export function PlayPageClient({
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
           {currentPlayer?.ticket && (
             <Ticket grid={currentPlayer.ticket.grid} />
           )}
+          <Leaderboard />
         </div>
 
         {/* Game Area */}

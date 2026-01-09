@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useGameStore } from "../game-store";
 import {
   ClaimPattern,
@@ -16,7 +16,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trophy, Check, X } from "lucide-react";
+import { Loader2, Trophy } from "lucide-react";
+import { toast } from "sonner";
 
 interface ClaimModalProps {
   gameId: string;
@@ -32,10 +33,6 @@ export function ClaimModal({
   const [selectedPattern, setSelectedPattern] =
     useState<ClaimPattern | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<{
-    success: boolean;
-    message: string;
-  } | null>(null);
 
   const {
     currentPlayer,
@@ -44,12 +41,33 @@ export function ClaimModal({
     setIsClaiming,
     setClaimError,
     addClaimedPattern,
+    lastClaimTimestamp,
+    setLastClaimTimestamp,
   } = useGameStore();
+
+  // Cooldown logic
+  const COOLDOWN_MS = 5000;
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    if (!lastClaimTimestamp) return;
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [lastClaimTimestamp]);
+
+  const timeSinceLastClaim = now - (lastClaimTimestamp || 0);
+  const cooldownRemaining = Math.max(
+    0,
+    COOLDOWN_MS - timeSinceLastClaim
+  );
+  const inCooldown =
+    lastClaimTimestamp !== null && cooldownRemaining > 0;
 
   // Get enabled patterns from game config
   const enabledPatterns =
-    game?.patterns.filter((p) => p.enabled).map((p) => p.pattern) ??
-    [];
+    game?.patterns
+      .filter((p: { enabled: boolean }) => p.enabled)
+      .map((p: { pattern: string }) => p.pattern) ?? [];
 
   // Check if a pattern is already fully claimed
   const getPatternStatus = useCallback(
@@ -93,9 +111,20 @@ export function ClaimModal({
   const handleSubmit = async () => {
     if (!selectedPattern || !currentPlayer) return;
 
+    if (inCooldown) {
+      toast.error(
+        `Please wait ${Math.ceil(
+          cooldownRemaining / 1000
+        )}s before claiming again.`
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     setIsClaiming(true);
-    setResult(null);
+
+    // Set local cooldown timestamp immediately
+    setLastClaimTimestamp(Date.now());
 
     try {
       const response = await fetch(`/api/games/${gameId}/claim`, {
@@ -110,11 +139,11 @@ export function ClaimModal({
       const data = await response.json();
 
       if (!response.ok) {
-        setResult({
-          success: false,
-          message: data.reason || data.error || "Claim failed",
-        });
         setClaimError(data.error);
+        toast.error("Invalid Claim", {
+          description:
+            data.reason || data.error || "Claim verification failed",
+        });
         return;
       }
 
@@ -128,16 +157,17 @@ export function ClaimModal({
         claimedAt: new Date().toISOString(),
       });
 
-      setResult({
-        success: true,
-        message: `Congratulations! You claimed ${PATTERN_DISPLAY_INFO[selectedPattern].name} (Rank #${data.data.claim.rank}) for ${data.data.claim.points} points!`,
+      toast.success("Congratulations!", {
+        description: `You claimed ${PATTERN_DISPLAY_INFO[selectedPattern].name} (Rank #${data.data.claim.rank}) for ${data.data.claim.points} points!`,
       });
+
+      // Close modal on success
+      handleClose();
     } catch {
-      setResult({
-        success: false,
-        message: "Network error. Please try again.",
-      });
       setClaimError("Network error");
+      toast.error("Network error", {
+        description: "Please check your connection and try again.",
+      });
     } finally {
       setIsSubmitting(false);
       setIsClaiming(false);
@@ -146,7 +176,6 @@ export function ClaimModal({
 
   const handleClose = () => {
     setSelectedPattern(null);
-    setResult(null);
     onClose();
   };
 
@@ -168,104 +197,81 @@ export function ClaimModal({
           </DialogDescription>
         </DialogHeader>
 
-        {result ? (
-          <div
-            className={`p-4 rounded-lg ${
-              result.success
-                ? "bg-green-50 border border-green-200 text-green-800"
-                : "bg-red-50 border border-red-200 text-red-800"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {result.success ? (
-                <Check className="h-5 w-5 text-green-600" />
-              ) : (
-                <X className="h-5 w-5 text-red-600" />
-              )}
-              <p className="font-medium">{result.message}</p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-2 py-4">
-            {Object.values(ClaimPattern).map((pattern) => {
-              const dbPattern = mapToDbPattern(pattern);
-              const isEnabled = enabledPatterns.includes(dbPattern);
-              const status = getPatternStatus(pattern);
+        <div className="grid gap-2 py-4">
+          {Object.values(ClaimPattern).map((pattern) => {
+            const dbPattern = mapToDbPattern(pattern);
+            const isEnabled = enabledPatterns.includes(dbPattern);
+            const status = getPatternStatus(pattern);
 
-              if (!isEnabled) return null;
+            if (!isEnabled) return null;
 
-              return (
-                <button
-                  type="button"
-                  key={pattern}
-                  onClick={() =>
-                    !status.maxReached && setSelectedPattern(pattern)
-                  }
-                  disabled={status.maxReached || isSubmitting}
-                  className={`p-3 rounded-lg border text-left transition-all ${
-                    selectedPattern === pattern
-                      ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
-                      : status.maxReached
-                      ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
-                      : status.isMine
-                      ? "border-green-300 bg-green-50"
-                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">
-                        {PATTERN_DISPLAY_INFO[pattern].name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {PATTERN_DISPLAY_INFO[pattern].description}
-                      </p>
-                    </div>
-                    {status.isMine && (
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                        Claimed by you!
-                      </span>
-                    )}
-                    {status.maxReached && !status.isMine && (
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                        Fully claimed
-                      </span>
-                    )}
-                    {!status.maxReached && status.count > 0 && (
-                      <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                        {status.count}/{status.maxRank} claimed
-                      </span>
-                    )}
+            return (
+              <button
+                type="button"
+                key={pattern}
+                onClick={() =>
+                  !status.maxReached && setSelectedPattern(pattern)
+                }
+                disabled={status.maxReached || isSubmitting}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  selectedPattern === pattern
+                    ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
+                    : status.maxReached
+                    ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
+                    : status.isMine
+                    ? "border-green-300 bg-green-50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">
+                      {PATTERN_DISPLAY_INFO[pattern].name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {PATTERN_DISPLAY_INFO[pattern].description}
+                    </p>
                   </div>
-                </button>
-              );
-            })}
-          </div>
-        )}
+                  {status.isMine && (
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                      Claimed by you!
+                    </span>
+                  )}
+                  {status.maxReached && !status.isMine && (
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                      Fully claimed
+                    </span>
+                  )}
+                  {!status.maxReached && status.count > 0 && (
+                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                      {status.count}/{status.maxRank} claimed
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
 
         <DialogFooter>
-          {result ? (
-            <Button onClick={handleClose}>Close</Button>
-          ) : (
-            <>
-              <Button variant="outline" onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!selectedPattern || isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Verifying...
-                  </>
-                ) : (
-                  "Claim Prize"
-                )}
-              </Button>
-            </>
-          )}
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!selectedPattern || isSubmitting || inCooldown}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Verifying...
+              </>
+            ) : inCooldown ? (
+              `Wait ${Math.ceil(cooldownRemaining / 1000)}s`
+            ) : (
+              "Claim Prize"
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

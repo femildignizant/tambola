@@ -72,12 +72,14 @@ export interface GameStore {
   isClaiming: boolean;
   claimError: string | null;
   claimedPatterns: ClaimedPattern[];
+  lastClaimTimestamp: number | null;
 
   // Claim Actions (Story 5.2)
   setIsClaiming: (isClaiming: boolean) => void;
   setClaimError: (error: string | null) => void;
   addClaimedPattern: (pattern: ClaimedPattern) => void;
   setClaimedPatterns: (patterns: ClaimedPattern[]) => void;
+  setLastClaimTimestamp: (timestamp: number | null) => void;
   resetClaimState: () => void;
   toggleMark: (number: number) => void;
   setMarkedNumbers: (numbers: number[]) => void;
@@ -107,18 +109,19 @@ const initialState = {
   isClaiming: false,
   claimError: null as string | null,
   claimedPatterns: [] as ClaimedPattern[],
+  lastClaimTimestamp: null as number | null,
   markedNumbers: [],
 };
 
 export const useGameStore = create<GameStore>((set, get) => ({
   ...initialState,
 
-  setGame: (game) => {
+  setGame: (game: GameDetails) => {
     console.log("🏪 Store setGame called with:", game);
     set({ game });
   },
 
-  setPlayers: (players) => set({ players }),
+  setPlayers: (players: Player[]) => set({ players }),
 
   addPlayer: (player) =>
     set((state) => {
@@ -132,13 +135,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       };
     }),
 
-  setCurrentPlayer: (player) => set({ currentPlayer: player }),
+  setCurrentPlayer: (player: CurrentPlayer) =>
+    set({ currentPlayer: player }),
 
-  setLoading: (isLoading) => set({ isLoading }),
+  setLoading: (isLoading: boolean) => set({ isLoading }),
 
-  setError: (error) => set({ error }),
+  setError: (error: string | null) => set({ error }),
 
-  updateGameStatus: (status) =>
+  updateGameStatus: (status: GameDetails["status"]) =>
     set((state) => ({
       game: state.game ? { ...state.game, status } : null,
     })),
@@ -146,7 +150,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   reset: () => set(initialState),
 
   // Game Loop Actions (Story 4.1)
-  setCalledNumbers: (numbers) =>
+  setCalledNumbers: (numbers: number[]) =>
     set({
       calledNumbers: numbers,
       currentNumber:
@@ -223,16 +227,29 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ markedNumbers: numbers }),
 
   // Claim Actions (Story 5.2)
-  setIsClaiming: (isClaiming) => set({ isClaiming }),
+  setIsClaiming: (isClaiming: boolean) => set({ isClaiming }),
 
-  setClaimError: (claimError) => set({ claimError }),
+  setClaimError: (claimError: string | null) => set({ claimError }),
 
-  addClaimedPattern: (pattern) =>
-    set((state) => ({
-      claimedPatterns: [...state.claimedPatterns, pattern],
-    })),
+  addClaimedPattern: (pattern: ClaimedPattern) =>
+    set((state) => {
+      // Avoid duplicates
+      const exists = state.claimedPatterns.some(
+        (p) =>
+          p.pattern === pattern.pattern &&
+          p.playerId === pattern.playerId
+      );
+      if (exists) return state;
+      return {
+        claimedPatterns: [...state.claimedPatterns, pattern],
+      };
+    }),
 
-  setClaimedPatterns: (claimedPatterns) => set({ claimedPatterns }),
+  setClaimedPatterns: (claimedPatterns: ClaimedPattern[]) =>
+    set({ claimedPatterns }),
+
+  setLastClaimTimestamp: (timestamp: number | null) =>
+    set({ lastClaimTimestamp: timestamp }),
 
   resetClaimState: () =>
     set({
