@@ -74,7 +74,6 @@ export function PlayPageClient({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const {
     currentPlayer,
-    setCurrentPlayer,
     calledNumbers,
     isGameEnded,
     addCalledNumber,
@@ -82,7 +81,6 @@ export function PlayPageClient({
     currentNumber,
     gameSequence,
     setGameEnded,
-    setMarkedNumbers,
     setGame,
   } = useGameStore();
 
@@ -93,6 +91,59 @@ export function PlayPageClient({
   const [error, setError] = useState<string | null>(null);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [isEndingGame, setIsEndingGame] = useState(false);
+  const [isReconnecting, setIsReconnecting] = useState(false);
+
+  // Sync game state from server (Story 6.1 - Reconnection)
+  const syncGameState = useCallback(async () => {
+    const token = localStorage.getItem(`game-${gameId}-token`);
+    if (!token && !isHost) return;
+
+    setIsReconnecting(true);
+    try {
+      const response = await fetch(`/api/games/${gameId}/state`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to sync game state");
+      }
+
+      const { data } = await response.json();
+
+      // Check if game has ended while disconnected
+      if (data.game.status === "COMPLETED") {
+        router.push(`/game/${gameId}/results`);
+        return;
+      }
+
+      // Hydrate store with server state
+      const { hydrateFromServer, setCurrentPlayer } =
+        useGameStore.getState();
+
+      hydrateFromServer({
+        game: data.game,
+        calledNumbers: data.calledNumbers,
+        claims: data.claims,
+        markedNumbers: data.player?.ticket?.markedNumbers,
+      });
+
+      // Update current player if available (use token from localStorage)
+      if (data.player && token) {
+        setCurrentPlayer({
+          id: data.player.id,
+          name: data.player.name,
+          token: token,
+          ticket: data.player.ticket,
+        });
+      }
+    } catch (err) {
+      console.error("Error syncing game state:", err);
+      // Set error state for better UX
+      setError("Failed to sync game. Please refresh the page.");
+    } finally {
+      setIsReconnecting(false);
+    }
+  }, [gameId, isHost, router]);
 
   // Initialize with server state
   useEffect(() => {
@@ -263,6 +314,44 @@ export function PlayPageClient({
     };
   }, [gameId, addCalledNumber, setGameEnded, router, announceNumber]);
 
+  // Pusher reconnection handling (Story 6.1)
+  useEffect(() => {
+    const handleConnected = () => {
+      console.log("📡 Pusher connected");
+    };
+
+    const handleStateChange = ({
+      previous,
+      current,
+    }: {
+      previous: string;
+      current: string;
+    }) => {
+      console.log(`📡 Pusher state: ${previous} -> ${current}`);
+
+      // If we just reconnected, sync game state to catch up
+      if (previous === "connecting" && current === "connected") {
+        console.log("🔄 Pusher reconnected, syncing state...");
+        syncGameState();
+        toast.info("Reconnected", {
+          description: "Syncing game state...",
+          duration: 2000,
+        });
+      }
+    };
+
+    pusherClient.connection.bind("connected", handleConnected);
+    pusherClient.connection.bind("state_change", handleStateChange);
+
+    return () => {
+      pusherClient.connection.unbind("connected", handleConnected);
+      pusherClient.connection.unbind(
+        "state_change",
+        handleStateChange
+      );
+    };
+  }, [syncGameState]);
+
   // Host-only: Start the number calling loop
   useEffect(() => {
     if (isHost && !isGameEnded && !loading) {
@@ -298,18 +387,13 @@ export function PlayPageClient({
     calledNumbers.length,
   ]);
 
-  // Fetch player data on mount
+  // Fetch player data and sync state on mount (Story 6.1)
   useEffect(() => {
-    const fetchPlayerData = async () => {
+    const initializeGame = async () => {
       try {
         const token = localStorage.getItem(`game-${gameId}-token`);
 
-        if (!token) {
-          if (isHost) {
-            // Host does not need a token if they haven't joined as a player
-            setLoading(false);
-            return;
-          }
+        if (!token && !isHost) {
           setError(
             "No player token found. Please join the game from the lobby."
           );
@@ -317,51 +401,27 @@ export function PlayPageClient({
           return;
         }
 
-        const response = await fetch(
-          `/api/games/${gameId}/verify-player`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to verify player session");
-        }
-
-        const result = await response.json();
-
-        setCurrentPlayer({
-          id: result.data.player.id,
-          name: result.data.player.name,
-          token: result.data.token,
-          ticket: result.data.ticket,
-        });
-
-        // Sync marked numbers
-        if (result.data.ticket.markedNumbers) {
-          setMarkedNumbers(result.data.ticket.markedNumbers);
-        }
+        // Single API call for full state sync (covers player, claims, called numbers)
+        await syncGameState();
       } catch (err) {
         console.error(err);
-        setError(
-          "Failed to load player data. Please return to lobby."
-        );
+        setError("Failed to load game data. Please return to lobby.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPlayerData();
-  }, [gameId, setCurrentPlayer, isHost, setMarkedNumbers]);
+    initializeGame();
+  }, [gameId, isHost, syncGameState]);
 
-  if (loading) {
+  if (loading || isReconnecting) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="text-muted-foreground">
-          Loading game interface...
+          {isReconnecting
+            ? "Syncing game state..."
+            : "Loading game interface..."}
         </p>
       </div>
     );

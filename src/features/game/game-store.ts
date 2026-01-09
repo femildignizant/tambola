@@ -83,6 +83,9 @@ export interface GameStore {
   resetClaimState: () => void;
   toggleMark: (number: number) => void;
   setMarkedNumbers: (numbers: number[]) => void;
+
+  // Hydration action for reconnection (Story 6.1)
+  hydrateFromServer: (state: HydrateState) => void;
 }
 
 interface ClaimedPattern {
@@ -92,6 +95,15 @@ interface ClaimedPattern {
   playerId: string;
   playerName: string;
   claimedAt: string;
+}
+
+// Interface for server state hydration (Story 6.1)
+export interface HydrateState {
+  game?: GameDetails;
+  calledNumbers?: number[];
+  claims?: ClaimedPattern[];
+  markedNumbers?: number[];
+  currentPlayer?: CurrentPlayer;
 }
 
 const initialState = {
@@ -257,4 +269,43 @@ export const useGameStore = create<GameStore>((set, get) => ({
       claimError: null,
       claimedPatterns: [], // Reset claimed patterns to prevent stale data
     }),
+
+  // Hydration action for reconnection (Story 6.1)
+  hydrateFromServer: (state: HydrateState) => {
+    set((prev) => {
+      const updates: Partial<GameStore> = {};
+
+      // Update game if provided
+      if (state.game) {
+        updates.game = state.game;
+      }
+
+      // Merge called numbers - server is source of truth
+      if (state.calledNumbers !== undefined) {
+        updates.calledNumbers = state.calledNumbers;
+        updates.currentNumber =
+          state.calledNumbers.length > 0
+            ? state.calledNumbers[state.calledNumbers.length - 1]
+            : null;
+        updates.gameSequence = state.calledNumbers.length;
+      }
+
+      // Merge claims - server is source of truth
+      if (state.claims !== undefined) {
+        updates.claimedPatterns = state.claims;
+      }
+
+      // Merge marked numbers - server is source of truth
+      if (state.markedNumbers !== undefined) {
+        updates.markedNumbers = state.markedNumbers;
+      }
+
+      // Update current player if provided
+      if (state.currentPlayer) {
+        updates.currentPlayer = state.currentPlayer;
+      }
+
+      return { ...prev, ...updates };
+    });
+  },
 }));
