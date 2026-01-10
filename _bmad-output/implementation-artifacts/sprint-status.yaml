@@ -95,5 +95,5 @@ development_status:
   # Epic 7
   epic-7: in-progress
   7-1-join-page-with-game-code-entry: done
-  7-2-user-documentation-host-player-guides: ready-for-dev
+  7-2-user-documentation-host-player-guides: done
   7-3-documentation-dark-mode: backlog # Deferred - P2

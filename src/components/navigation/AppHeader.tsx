@@ -44,7 +44,13 @@ export function AppHeader({
           </div>
 
           {showUserMenu && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/docs"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                📖 Docs
+              </Link>
               <LogoutButton />
             </div>
           )}
