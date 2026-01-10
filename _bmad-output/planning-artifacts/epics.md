@@ -353,17 +353,37 @@ Players can reconnect mid-game and view their game history.
 
 ---
 
+### Epic 7: User Onboarding & Documentation
+
+Players can join games via code entry page; all users can access self-service documentation.
+
+**User Outcome:** Seamless game joining without direct links; self-service onboarding reduces user confusion.
+
+**FRs Covered:** FR14 (enhanced), New: Join Page UI, Documentation
+
+**Implementation Notes:**
+
+- Dedicated `/join` page with game code entry
+- Documentation route group `(docs)` with Host and Player guides
+- Static generation for documentation pages
+- Pattern visualizations reusing existing components
+- **Requires Epic 1:** Auth context for some features
+- **Standalone:** Can be developed independently
+
+---
+
 ## Epic Summary
 
-| Epic      | Title                         | FRs    | Key Outcome                                |
-| --------- | ----------------------------- | ------ | ------------------------------------------ |
-| 1         | Foundation & Authentication   | 4      | Users can register and log in              |
-| 2         | Game Creation & Configuration | 14     | Hosts can create shareable games           |
-| 3         | Lobby & Player Joining        | 6      | Players join with tickets, ready to play   |
-| 4         | Number Calling & Marking      | 9      | Real-time gameplay with ticket interaction |
-| 5         | Claims & Game Completion      | 10     | Win prizes and complete games              |
-| 6         | Resilience & History          | 5      | Reconnection and game history              |
-| **Total** |                               | **48** | Complete Tambola MVP                       |
+| Epic      | Title                           | FRs     | Key Outcome                                |
+| --------- | ------------------------------- | ------- | ------------------------------------------ |
+| 1         | Foundation & Authentication     | 4       | Users can register and log in              |
+| 2         | Game Creation & Configuration   | 14      | Hosts can create shareable games           |
+| 3         | Lobby & Player Joining          | 6       | Players join with tickets, ready to play   |
+| 4         | Number Calling & Marking        | 9       | Real-time gameplay with ticket interaction |
+| 5         | Claims & Game Completion        | 10      | Win prizes and complete games              |
+| 6         | Resilience & History            | 5       | Reconnection and game history              |
+| 7         | User Onboarding & Documentation | 2+      | Join page and self-service documentation   |
+| **Total** |                                 | **50+** | Complete Tambola MVP + Onboarding          |
 
 ---
 
@@ -966,3 +986,147 @@ So that **I can remember my wins**.
 **When** I click "History" or "Past Games"
 **Then** I see a list of completed games I participated in
 **And** each item shows: Date, Game Name, Host, and My Status (Won/Lost)
+
+---
+
+## Epic 7: User Onboarding & Documentation — Stories
+
+### Story 7.1: Join Page with Game Code Entry
+
+As a **player**,
+I want **to enter a game code on a dedicated join page**,
+So that **I can quickly join a friend's Tambola game without needing a direct link**.
+
+**Acceptance Criteria:**
+
+**Given** I click "Join Room" from the landing page or navigation
+**When** I am redirected to `/join`
+**Then** I see a centered input field for a 6-character game code
+**And** the page is mobile-optimized (players often join from phones)
+
+**Given** I enter a valid 6-character game code
+**When** I submit the form
+**Then** the system validates the code against existing games
+**And** if valid, I am redirected to the game lobby
+**And** nickname handling occurs in the lobby (existing flow)
+
+**Given** I enter an invalid or non-existent code
+**When** I submit the form
+**Then** I see a clear error message: "Game not found. Check your code and try again."
+
+**Given** I enter a code for a game that has already started
+**When** I submit the form
+**Then** I see an error message: "This game has already started. You cannot join now."
+
+**Given** I enter a code for a game that is full
+**When** I submit the form
+**Then** I see an error message: "This game is full."
+
+**Technical Notes:**
+
+- Route: `src/app/join/page.tsx` (Server component with metadata)
+- Client component: `src/app/join/_components/JoinForm.tsx`
+- Reuse existing `/api/games/[gameId]/join` endpoint
+- Real-time validation feedback as user types
+- Mobile-first responsive design
+
+---
+
+### Story 7.2: User Documentation (Host & Player Guides)
+
+As a **new user**,
+I want **to access comprehensive documentation on how to host or play Tambola**,
+So that **I can participate confidently without external help**.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to `/docs`
+**When** the page loads
+**Then** I see a welcoming landing page with two clear paths: "Host Guide" and "Player Guide"
+**And** a sidebar navigation shows all documentation sections
+
+**Given** I am a host looking for help
+**When** I click on "Host Guide"
+**Then** I see documentation covering:
+
+- How to create a game
+- Customization options (patterns, points, intervals, player limits)
+- Managing gameplay (starting, drawing numbers)
+- Handling claims and ending games
+  **And** the content is clear, scannable, and beginner-friendly
+
+**Given** I am a player looking for help
+**When** I click on "Player Guide"
+**Then** I see documentation covering:
+
+- How to join a game (via code or link)
+- Understanding your ticket (3x9 grid explanation)
+- All prize patterns with visual examples (reuse PatternPreview component)
+- How to mark numbers and claim prizes
+- Game rules and tips for winning
+  **And** pattern visualizations show the actual Tambola grid with highlighted patterns
+
+**Given** I am on any documentation page
+**When** I view the page
+**Then** I see a consistent layout with:
+
+- Left sidebar for navigation (Host/Player sections with sub-items)
+- Main content area with clean typography
+- Responsive design (collapsible sidebar on mobile)
+  **And** the documentation uses a light theme for readability
+
+**Given** the documentation is deployed
+**When** the site is built
+**Then** all documentation pages are statically generated at build time for performance
+
+**Technical Notes:**
+
+- Route group: `src/app/(docs)/`
+- Layout: `src/app/(docs)/layout.tsx` (sidebar + content layout)
+- Landing: `src/app/(docs)/page.tsx`
+- Host Guide: `src/app/(docs)/host/page.tsx` (single comprehensive page)
+- Player Guide: `src/app/(docs)/player/page.tsx` (single comprehensive page)
+- Static generation via default Next.js behavior (no dynamic data)
+- Reuse `PatternPreview` component for pattern visualizations
+- Light theme (dark mode deferred to Story 7.3)
+- Accessible without authentication
+
+---
+
+### Story 7.3: Documentation Dark Mode (Deferred)
+
+As a **user who prefers dark interfaces**,
+I want **the documentation to support dark mode**,
+So that **I can read comfortably in low-light environments**.
+
+**Status:** P2 - Deferred for future implementation
+
+**Acceptance Criteria:**
+
+**Given** I am on any documentation page
+**When** I toggle dark mode (or system preference is dark)
+**Then** the documentation switches to a dark theme
+**And** all text, backgrounds, and components adapt appropriately
+**And** pattern visualizations remain clear and visible
+
+**Technical Notes:**
+
+- Add theme toggle to docs layout
+- Use CSS variables for theme switching
+- Test all documentation components in dark mode
+- Ensure sufficient contrast ratios for accessibility
+
+---
+
+## Epic Summary (Updated)
+
+| Epic      | Title                           | FRs     | Key Outcome                                |
+| --------- | ------------------------------- | ------- | ------------------------------------------ |
+| 1         | Foundation & Authentication     | 4       | Users can register and log in              |
+| 2         | Game Creation & Configuration   | 14      | Hosts can create shareable games           |
+| 3         | Lobby & Player Joining          | 6       | Players join with tickets, ready to play   |
+| 4         | Number Calling & Marking        | 9       | Real-time gameplay with ticket interaction |
+| 5         | Claims & Game Completion        | 10      | Win prizes and complete games              |
+| 6         | Resilience & History            | 5       | Reconnection and game history              |
+| 7         | User Onboarding & Documentation | 2+      | Join page and self-service documentation   |
+| **Total** |                                 | **50+** | Complete Tambola MVP + Onboarding          |

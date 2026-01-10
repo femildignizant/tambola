@@ -91,3 +91,9 @@ development_status:
   6-2-mid-game-joining-restricted: done
   6-3-basic-game-history: done
   epic-6-retrospective: done
+
+  # Epic 7
+  epic-7: in-progress
+  7-1-join-page-with-game-code-entry: done
+  7-2-user-documentation-host-player-guides: ready-for-dev
+  7-3-documentation-dark-mode: backlog # Deferred - P2
